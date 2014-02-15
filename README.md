@@ -2,6 +2,7 @@ WP-Player
 =========
 
 <p>WordPress 插件 WP-Player 是 一个迷你歌曲播放器，可以自己上传MP3，也可以使用虾米歌曲ID，理论支持格式mp3,m4a。</p>
+<p><strong>Demo 预览：</strong>http://webjyh.com/wp-player/</p>
 
 <blockquote>
 	<p>更新说明：==== v1.3 ==== 2014-02-14</p>
@@ -29,8 +30,14 @@ WP-Player
 	</ul>
 </blockquote>
 
+<h4>使用方法：</h4>
+<p>WordPress 插件使用短代码来实现调用播放器</p>
+<code>
+	[player]
+	[player loop="1" autoplay="1"]
+</code>
+
 <h4>插件介绍：</h4>
-=========
 <ol>
 	<li>填写虾米歌曲ID</li>
 	<li>自定义上传mp3文件，支持外链音乐文件</li>
@@ -38,9 +45,7 @@ WP-Player
 	<li>自定义歌曲名，歌手名</li>
 	<li>自定义循环播放 loop=”1″ 和 自动播放 autoplay=”1″</li>
 	<li>在同时填写虾米ID和歌曲地址时，优先采用虾米歌曲地址</li>
-	<li>7.自动播放只有在具体文章页面和Page页面才有用</li>
+	<li>自动播放只有在具体文章页面和Page页面才有用</li>
 </ol>
 
 <blockquote><strong>PS：</strong>一篇文章只能插入一个播放器，因为用了MetaBox获取参数，只能一篇文章使用一个。多使用Over了，不要怪我。插件使用时，在插件设置页面，有个载入自带 jQuery 文件，此功能是有些主题以自带jQuery库，如果没有jQuery库的，可以勾选上这个勾，默认插件已勾选，如不需要请各位设置取消。</blockquote>
-
-<p><strong>Demo 预览：</strong>http://webjyh.com/wp-player/</p>
