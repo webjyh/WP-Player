@@ -1,0 +1,84 @@
+.music-box,
+.music-box .music-controls li a.play,
+.music-box .music-controls li a.pause,
+.music-box .music-progress .music-seek-bar .music-play-bar,
+.music-box .music-progress .music-seek-bar .music-play-bar .play-current { margin:0px; padding:0px; background:url(play.png) no-repeat 0px 0px; }
+.music-box { margin:0px; padding:0px; width:0px; height:0px; overflow:hidden; }
+.music-box { margin:0px; padding:0px; position:relative; width:240px; height:64px; margin:10px 0px; box-shadow:0px 0px 5px rgba(0,0,0,0.2); }
+.music-box .music-author { margin:0px; padding:0px; position:absolute; width:38px; height:38px; top:14px; left:11px; overflow:hidden; }
+.music-box .music-author img { padding:0px; margin:0px; }
+.music-box .music-text { margin:0px; padding:0px; position:absolute; width:120px; height:30px; overflow:hidden; left:63px; top:15px; white-space:nowrap; color:#b9b9b9; font-family:"Airal";  }
+.music-box .music-text h3 { margin:0px; padding:0px; font-size:12px; line-height:100%; text-shadow:1px 2px rgba(0,0,0,0.5); color:#b9b9b9; }
+.music-box .music-text p { margin:0px; padding:0px; text-shadow:1px 2px rgba(0,0,0,0.5); color:#b9b9b9; font-size:12px; }
+.music-box .music-controls { position:absolute; width:42px; height:20px; top:17px; right:13px; }
+.music-box .music-controls li { margin:0px; padding:0px; float:right; display:inline; }
+.music-box .music-controls li a { margin:0px; padding:0px; position:absolute; display:block; overflow:hidden; font:0 a; text-indent:-9999px; }
+.music-box .music-controls li a.stop { margin:0px; padding:0px; top:2px; right:1px; width:14px; height:15px; }
+.music-box .music-controls li a.play, .music-box .music-controls li a.pause { margin:0px; padding:0px; top:0px; left:1px; width:17px; height:19px; background-position:0px -71px;; }
+.music-box .music-controls li a.pause { display:none; background-position:-23px -71px; }
+.music-box .music-progress { position:absolute; top:49px; left:62px; width:166px; height:5px; }
+.music-box .music-progress .music-seek-bar, .music-box .music-progress .music-seek-bar .music-play-bar { width:0px; height:100%; cursor:pointer; }
+.music-box .music-progress .music-seek-bar .music-play-bar { position:relative; left:1px; width:0%; background-position:0px -65px; overflow:visible !important; }
+.music-box .music-progress .music-seek-bar .music-play-bar .play-current { position:absolute; right:-3px; top:-3px; display:block; width:9px; height:9px; background-position:-49px -71px; }
+
+.wp-player-themes .music-box .music-controls li a.play,
+.wp-player-themes .music-box .music-controls li a.pause,
+.wp-player-themes .music-box .music-controls li a.stop,
+.wp-player-themes .music-box .music-progress .music-seek-bar .music-play-bar,
+.wp-player-themes .music-box .music-progress .music-seek-bar .music-play-bar .play-current { background:url(play_2.png) no-repeat 0px 0px; }
+.wp-player-themes .music-box { background:none; overflow:visible; margin:20px 0px; height:70px; border-radius:2px; box-shadow:none; }
+.wp-player-themes .music-box .music-author { width:90px; height:90px; top:-10px; left:0px; z-index:10; overflow:visible; }
+@-webkit-keyframes rotate {
+	from {
+		-webkit-transform:rotate(0deg);
+	} to {
+		-webkit-transform:rotate(360deg);
+	}
+}
+@-moz-keyframes rotate {
+	from {
+		-moz-transform:rotate(0deg);
+	} to {
+		-moz-transform:rotate(360deg);
+	}
+}
+@-ms-keyframes rotate {
+	from {
+		-ms-transform:rotate(0deg);
+	} to {
+		-ms-transform:rotate(360deg);
+	}
+}
+@keyframes rotate {
+	from {
+		transform:rotate(0deg);
+	} to {
+		transform:rotate(360deg);
+	}
+}
+.wp-player-themes .music-box .music-author img { position:relative; border-radius:50%; width:90px; height:90px; transition-duration:0;
+	box-shadow:0px 0px 5px rgba(0, 0, 0, 0.5);
+	-webkit-animation:rotate 10s linear infinite;
+	-webkit-animation-play-state:paused;
+	   -moz-animation:rotate 10s linear infinite;
+	   -moz-animation-play-state:paused;
+	    -ms-animation:rotate 10s linear infinite;
+		-ms-animation-play-state:paused;
+	        animation:rotate 10s linear infinite;
+			animation-play-state:paused;
+}
+.wp-player-themes .music-box .music-author .runing {
+	-webkit-animation-play-state: running;
+	-moz-animation-play-state: running;
+	-ms-animation-play-state: running;
+}
+.wp-player-themes .music-box .music-text { width:180px; height:70px; left:60px; top:0px; color:#FFF; background:#5a6a7a; border-radius:0px 2px 2px 0px; box-shadow:0px 0px 5px rgba(0,0,0,0.3); }
+.wp-player-themes .music-box .music-text h3 { padding-top:12px; padding-left:40px; color:#FFF; font-weight:normal; font-family:"Microsoft Yahei",Airal; }
+.wp-player-themes .music-box .music-text p { padding-left:40px; text-shadow:1px 2px rgba(0,0,0,0.5); color:#FFF; font-family:"Microsoft Yahei",Airal; }
+.wp-player-themes .music-box .music-controls { top:28px; right:15px; }
+.wp-player-themes .music-box .music-controls li a.stop { background-position:-66px -7px; }
+.wp-player-themes .music-box .music-controls li a.play, .wp-player-themes .music-box .music-controls li a.pause { background-position:0px -3px; }
+.wp-player-themes .music-box .music-controls li a.pause { background-position:-23px -3px; }
+.wp-player-themes .music-box .music-progress { left:auto; top:55px; right:6px; width:140px; height:5px; background:#485461; border-radius:3px; }
+.wp-player-themes .music-box .music-progress .music-seek-bar .music-play-bar { position:relative; left:0px; width:0%; background:#758a9e; border-radius:3px; }
+.wp-player-themes .music-box .music-progress .music-seek-bar .music-play-bar .play-current { right:-3px; top:-2px; background-position:-49px -3px; }
