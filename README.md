@@ -33,8 +33,8 @@ WP-Player
 <h4>使用方法：</h4>
 <p>WordPress 插件使用短代码来实现调用播放器</p>
 <pre>
-	<p>[player]</p>
-	<p>[player loop="1" autoplay="1"]</p>
+[player]
+[player loop="1" autoplay="1"]
 </pre>
 
 <h4>插件介绍：</h4>
