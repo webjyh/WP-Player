@@ -7,6 +7,13 @@ WP-Player
 <blockquote>
 	<p>更新说明：==== v1.3 ==== 2014-02-14</p>
 	<ul>
+		<li>1.插件提交到官方 WordPress plugins 库</li>
+		<li>2.因提交到官方所以删除一些无用文件</li>
+		<li>3.由原来自带的jQuery库 修改调用WordPress自带jQuery库</li>
+	</ul>
+	
+	<p>更新说明：==== v1.3 ==== 2014-02-14</p>
+	<ul>
 		<li>1.增加百度云API，使解析虾米音乐地址更稳定</li>
 		<li>2.细节调整</li>
 		<li>3.修复Bug</li>
