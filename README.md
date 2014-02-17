@@ -5,7 +5,7 @@ WP-Player
 <p><strong>Demo 预览：</strong>http://webjyh.com/wp-player/</p>
 
 <blockquote>
-	<p>更新说明：==== v1.3 ==== 2014-02-14</p>
+	<p>更新说明：==== v1.3.1 ==== 2014-02-17</p>
 	<ul>
 		<li>1.插件提交到官方 WordPress plugins 库</li>
 		<li>2.因提交到官方所以删除一些无用文件</li>
