@@ -52,13 +52,12 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 		//Include scripts
 		function wp_player_scripts(){
 			$options = $this->options;
-			wp_enqueue_style( 'wp-player', $this->base_dir . 'images/wp-player.min.css', array(), '1.3', 'screen' );
-			
+			wp_enqueue_style( 'wp-player', $this->base_dir . 'images/wp-player.min.css', array(), '1.3.1', 'screen' );
 			if( $options['jQuery'] == 'true' ){
-				wp_enqueue_script( 'wp-jquery', $this->base_dir . 'js/jquery.min.js', array(), '1.3', true );
+				wp_enqueue_script( 'jquery' );
 			}
-			wp_enqueue_script( 'wp-player-jplayer', $this->base_dir . 'js/jquery.jplayer.min.js', array(), '1.3', true );
-			wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array(), '1.3', true );
+			wp_enqueue_script( 'wp-player-jplayer', $this->base_dir . 'js/jquery.jplayer.min.js', array('jquery'), '1.3.1', true );
+			wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array('jquery'), '1.3.1', true );
 			
 		}
 		
