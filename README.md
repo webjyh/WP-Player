@@ -5,6 +5,11 @@ WP-Player
 <p><strong>Demo 预览：</strong>http://webjyh.com/wp-player/</p>
 
 <blockquote>
+	<p>更新说明：==== v1.3.2 ==== 2014-02-19</p>
+	<ul>
+		<li>1.修正jQuery后台选项无用的Bug</li>
+	</ul>
+
 	<p>更新说明：==== v1.3.1 ==== 2014-02-17</p>
 	<ul>
 		<li>1.插件提交到官方 WordPress plugins 库</li>
