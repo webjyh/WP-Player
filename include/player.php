@@ -10,7 +10,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 
 			//Include MetaBox
 			require_once('metaboxes.php');
-		
+			
 			add_action( "admin_menu", array( $this, 'options_menu' ) );
 			add_filter( 'plugin_action_links', array( $this, 'wp_player_add_link' ), 10, 4 );
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_player_scripts') );
@@ -23,10 +23,10 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 			$this->admin_dir = site_url( '/wp-admin/options-general.php?page=player.php' );
 			
 		}
-		
+
 		//Register Menu
 		function options_menu(){
-			add_options_page( 'WP-Player 设置', 'WP-Player 设置', 9, basename( __FILE__ ), array( $this, 'printAdminPage' ) );
+			add_options_page( 'WP-Player 设置', 'WP-Player 设置', 'manage_options', basename( __FILE__ ), array( $this, 'printAdminPage' ) );
 			add_action( 'admin_init', array( $this, 'wp_player_settings' ));
 		}
 		
@@ -34,8 +34,9 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 		function wp_player_settings() {
 			register_setting( 'wp_player_settings_group', 'wp_player_options' );
 			$options = get_option( 'wp_player_options' );
-			if ( !is_array( $options ) || empty( $options['api'] ) ){
-				$defaults = array( 'jQuery'=>'true', 'themes'=>2, 'api'=>'wpplayer.duapp.com' );
+			if ( !is_array( $options ) || empty( $options['api'] ) || $options['api'] == 'wpplayer.duapp.com' ){
+				$defaults = array( 'jQuery'=>'true', 'themes'=>2, 'api'=>'wpplayer.sinaapp.com' );
+				delete_option('wp_player_options');
 				add_option( 'wp_player_options', $defaults );
 			}
 		}
@@ -161,12 +162,13 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><label for="blogname">解析虾米音乐 URL <small style="font-weight:normal;">(推荐百度云)</small></label></th>
+								<th scope="row"><label for="blogname">解析虾米音乐 URL <small style="font-weight:normal;">(推荐新浪云)</small></label></th>
 								<td>
+								<?php echo $options['api']; ?>
 									<fieldset>
 										<label>
-											<input type="radio" name="wp_player_options[api]" value="wpplayer.duapp.com" <?php if( $options['api'] == 'wpplayer.duapp.com' ) echo 'checked="checked"'; ?> />
-											百度云：<code>wpplayer.duapp.com</code>
+											<input type="radio" name="wp_player_options[api]" value="wpplayer.sinaapp.com" <?php if( $options['api'] == 'wpplayer.sinaapp.com' ) echo 'checked="checked"'; ?> />
+											新浪云：<code>wpplayer.duapp.com</code>
 										</label>
 										&nbsp;&nbsp;
 										<label>

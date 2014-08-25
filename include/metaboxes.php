@@ -202,7 +202,7 @@ function wp_player_get_meta_text_input( $args = array(), $value = false ) {
 		<td>
 			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
 			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo wp_specialchars( $value, 1 ); ?>" size="30" tabindex="30" style="width: 97%;" />
+			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo esc_html( $value ); ?>" size="30" tabindex="30" style="width: 97%;" />
 			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 		</td>
 	</tr>
@@ -247,7 +247,7 @@ function wp_player_get_meta_textarea( $args = array(), $value = false ) {
 		<td>
 			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
 			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<textarea name="<?php echo $name; ?>" id="<?php echo $name; ?>" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo wp_specialchars( $value, 1 ); ?></textarea>
+			<textarea name="<?php echo $name; ?>" id="<?php echo $name; ?>" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( $value ); ?></textarea>
 			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 		</td>
 	</tr>
@@ -284,7 +284,7 @@ function wp_player_get_meta_upload( $args = array(), $value = false ) {
 		<td>
 			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
 			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo wp_specialchars( $value, 1 ); ?>" size="30" tabindex="30" style="width: 85%;" />
+			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo esc_html( $value ); ?>" size="30" tabindex="30" style="width: 85%;" />
 			<input id="<?php echo $name; ?>_button" type="button" class="WP-Player-File button-secondary" value="点击上传" />
 			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
 		</td>
