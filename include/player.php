@@ -53,12 +53,12 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 		//Include scripts
 		function wp_player_scripts(){
 			$options = $this->options;
-			wp_enqueue_style( 'wp-player', $this->base_dir . 'images/wp-player.min.css', array(), '1.3.2', 'screen' );
+			wp_enqueue_style( 'wp-player', $this->base_dir . 'images/wp-player.min.css', array(), '1.3.4', 'screen' );
 			if( $options['jQuery'] == 'true' ){
 				wp_enqueue_script( 'jquery' );
 			}
-			wp_enqueue_script( 'wp-player-jplayer', $this->base_dir . 'js/jquery.jplayer.min.js', array(), '1.3.2', true );
-			wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array(), '1.3.2', true );
+			wp_enqueue_script( 'wp-player-jplayer', $this->base_dir . 'js/jquery.jplayer.min.js', array(), '1.3.4', true );
+			wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array(), '1.3.4', true );
 			
 		}
 		
@@ -80,7 +80,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 			wp_enqueue_script( 'jquery' );
 			wp_enqueue_script('media-upload');
 			wp_enqueue_script('thickbox');
-			wp_enqueue_script( 'plugin-uploader', plugins_url( 'js/plugin-uploader.js', dirname( __FILE__ ) ), array('jquery','media-upload','thickbox'), '1.3.2' );
+			wp_enqueue_script( 'plugin-uploader', plugins_url( 'js/plugin-uploader.js', dirname( __FILE__ ) ), array('jquery','media-upload','thickbox'), '1.3.4' );
 		}
 		
 		//add shortcode
