@@ -14,111 +14,92 @@ add_action( 'save_post', 'wp_player_save_meta_data' );
 function wp_player_create_meta_box() {
 	global $theme_name;
 	add_meta_box( 'wp-post-meta-boxes', 'WP-Player 播放器选项', 'wpPlayer_post_meta_boxes', 'post', 'normal', 'high' );
-	add_meta_box( 'wp-page-meta-boxes', 'WP-Player 播放器选项', 'wpPlayer_page_meta_boxes', 'page', 'normal', 'high' );
-	
+	add_meta_box( 'wp-page-meta-boxes', 'WP-Player 播放器选项', 'wpPlayer_post_meta_boxes', 'page', 'normal', 'high' );
 }
 
 /**
  * Array of variables for post meta boxes.  Make the 
  * function filterable to add options through child themes.
  */
-function wp_player_post_meta_boxes() {
-
-	/* Array of the Post meta box options. */
-	$meta_boxes = array(
-		'wp_player_type' => array(
-			'name' => 'wp_player_type',
-			'type' => 'radio',
-			'title' => '选择歌曲路线',
-			'description' => '自动获取表示:获取歌曲的图片，作者，歌曲名，歌曲地址，手动则反之。',
-			"options" => array(
-				"自动获取",
-				"手动上传"
-			)
+function wp_player_meta_boxes( $val = true, $apply = false ) {
+	$arr1 = array(
+		'mp3_xiami_type' => array(
+			'name' => 'mp3_xiami_type',
+			'type' => 'select',
+			'options' => array(
+				'song' => '单音乐页面',
+				'album' => '专辑页面',
+				'artist' => '艺人页面', 
+				'collect' => '精选集页面'
+			),
+			'output' => false
 		),
 		'mp3_xiami' => array(
 			'name' => 'mp3_xiami',
 			'type' => 'text',
-			'title' => '虾米歌曲ID',
-			"description" => '不知道怎样获取虾米歌曲ID，请点击<a href="http://webjyh.com/wp-player/" target="_blank">这里</a>'
+			'description' => '即可填音乐写地址ID，也可填写虾米音乐网址 http://......',
+			'button' => '获取音乐ID',
+			'output' => false
 		),
+	);
+	
+	$arr2 = array(
 		'mp3_title' => array(
 			'name' => 'mp3_title',
 			'type' => 'text',
-			'title' => '歌曲名'
+			'title' => '歌曲名',
+			'description' => '请填写歌曲名',
+			'output' => true
 		),
 		'mp3_author' => array(
 			'name' => 'mp3_author',
 			'type' => 'text',
-			'title' => '歌手'
+			'title' => '歌手名',
+			'description' => '请填写歌手名',
+			'output' => true
 		),
 		'mp3_address' => array(
 			'name' => 'mp3_address',
 			'type' => 'upload',
-			'title' => 'MP3外链',
-			"description" => '在这里可以上传MP3文件，支持的媒体格式有mp3,mp4,m4a,ogg,oga，也可以自己填写MP3外链地址，默认请带上http://'
+			'title' => '歌曲地址',
+			"description" => '在这里可以上传MP3文件，也可以自己填写MP3外链地址，默认请带上 http://',
+			'output' => true
 		),
 		'mp3_thumb' => array(
 			'name' => 'mp3_thumb',
 			'type' => 'upload',
-			'title' => '歌曲缩略图',
-			"description" => '上传歌曲缩略图，可以为空，程序将使用默认图'
+			'title' => '歌曲封面',
+			"description" => '上传封面，可以为空，WP-Player 将使用默认图',
+			'output' => true
 		)
 	);
 
-	return apply_filters( 'wp_player_post_meta_boxes', $meta_boxes );
+	$meta_boxes = $val ? $arr1 : $arr2;
+
+	if ( $apply ){
+		$meta_boxes = array();
+		$meta_boxes = array_merge( $arr1, $arr2 );
+	}
+
+	return apply_filters( 'wp_player_meta_boxes', $meta_boxes );
 }
 
+
 /**
- * Array of variables for page meta boxes.  Make the 
- * function filterable to add options through child themes.
+ * get meta boxes 
  */
-
-function wp_player_page_meta_boxes() {
-
-	/* Array of the Page meta box options. */
-	$meta_boxes = array(
-		'wp_player_type' => array(
-			'name' => 'wp_player_type',
-			'type' => 'radio',
-			'title' => '选择歌曲路线',
-			'description' => '自动获取表示:获取歌曲的图片，作者，歌曲名，歌曲地址，手动则反之。',
-			"options" => array(
-				"自动获取",
-				"手动上传"
-			)
-		),
-		'mp3_id' => array(
-			'name' => 'mp3_id',
-			'type' => 'text',
-			'title' => '虾米歌曲ID',
-			"description" => '不知道怎样获取虾米歌曲ID，请点击<a href="http://webjyh.com/wp-player/" target="_blank">这里</a>'
-		),
-		'mp3_title' => array(
-			'name' => 'mp3_title',
-			'type' => 'text',
-			'title' => '歌曲名'
-		),
-		'mp3_author' => array(
-			'name' => 'mp3_author',
-			'type' => 'text',
-			'title' => '歌手'
-		),
-		'mp3_address' => array(
-			'name' => 'mp3_address',
-			'type' => 'upload',
-			'title' => 'MP3外链',
-			"description" => '在这里可以上传MP3文件，支持的媒体格式有mp3,mp4,m4a,ogg,oga，也可以自己填写MP3外链地址，默认请带上http://'
-		),
-		'mp3_thumb' => array(
-			'name' => 'mp3_thumb',
-			'type' => 'upload',
-			'title' => '歌曲缩略图',
-			"description" => '上传歌曲缩略图，可以为空，程序将使用默认图'
-		)
-	);
-
-	return apply_filters( 'wp_player_page_meta_boxes', $meta_boxes );
+function get_wp_player_metaBox( $val = true ){
+	global $post;
+	$meta_boxes = wp_player_meta_boxes($val);
+	foreach ( $meta_boxes as $meta ){
+		$value = get_post_meta( $post->ID, $meta['name'], true );
+		switch ($meta['type']) {
+			case 'text': wp_player_get_meta_text_input( $meta, $value ); break;
+			case 'select': wp_player_get_meta_select( $meta, $value ); break;
+			case 'upload': wp_player_get_meta_upload( $meta, $value ); break;
+			case 'button': wp_player_get_meta_button( $meta, $value ); break;
+		}
+	}
 }
 
 /**
@@ -128,66 +109,32 @@ function wp_player_page_meta_boxes() {
  */
 
 function wpPlayer_post_meta_boxes() {
-	global $post;
-	$meta_boxes = wp_player_post_meta_boxes(); ?>
-
-	<table class="form-table" id="wp-player-tabs">
-		<tr>
-			<td>为什么会出现这个，这是因为你装了 WP-Player 插件而生成的，不知道如何使用，请点击<a href="http://webjyh.com/wp-player/" target="_blank">这里</a></td>
-		</tr>
-	<?php foreach ( $meta_boxes as $meta ) :
-
-		$value = get_post_meta( $post->ID, $meta['name'], true );
-
-		if ( $meta['type'] == 'text' )
-			wp_player_get_meta_text_input( $meta, $value );
-		elseif ( $meta['type'] == 'textarea' )
-			wp_player_get_meta_textarea( $meta, $value );
-		elseif ( $meta['type'] == 'radio' )
-			wp_player_get_meta_radio( $meta, $value );
-		elseif ( $meta['type'] == 'select' )
-			wp_player_get_meta_select( $meta, $value );
-		elseif ( $meta['type'] == 'upload' )
-			wp_player_get_meta_upload( $meta, $value );
-			
-	endforeach; ?>
-	</table>
+	global $post; ?>
+	<div class="wp-player-wrap" id="wp-player-wrap">
+		<ul class="wp-player-tabs" id="wp-player-tabs">
+			<li class="current"><a href="javascript: void(0);">虾米歌曲</a></li>
+			<li><a href="javascript: void(0);">手动上传</a></li>
+		</ul>
+		<div class="wp-player-row" id="wp-player-row">
+			<div class="wp-player-inner current">
+				<p><strong>填写方法</strong></p>
+				<ol>
+					<li>在虾米网打开喜欢的歌曲页面，复制歌曲页面的网址如：<code>http://www.xiami.com/song/2078022......</code></li>
+					<li>并将复制的网址填写到后面的表单内。音乐类型将根据网址自动做出选择。</li>
+					<li>点击<code>获取音乐ID</code>按钮，此时音乐ID出现在表单中。</li>
+					<li>将短代码 <code>[player autoplay="1"]</code> 填入您的文章内容中。</li>
+					<li>短代码中 <code>autoplay</code> 表示是否自动播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
+					<li>支持播放歌单：单音乐页面、专辑页面、艺人页面、精选集页面。</li>
+					<li><code>PS：</code>建议使用网址来获取音乐ID。</li>
+				</ol>
+				<div class="wp-player-input"><?php get_wp_player_metaBox(); ?></div>
+			</div>
+			<div class="wp-player-inner"><?php get_wp_player_metaBox(false); ?></div>
+		</div>
+	</div>
 <?php
 }
 
-/**
- * Displays meta boxes on the Write Page panel.  Loops 
- * through each meta box in the $meta_boxes variable.
- * Gets array from solostream_page_meta_boxes()
- */
-
-function wpPlayer_page_meta_boxes() {
-	global $post;
-	$meta_boxes = wp_player_page_meta_boxes(); ?>
-
-	<table class="form-table" id="wp-player-tabs">
-		<tr>
-			<td>为什么会出现这个，这是因为你装了 WP-Player插件而生成的，不知道如何使用，请点击<a href="http://webjyh.com/wp-player/" target="_blank">这里</a></td>
-		</tr>
-	<?php foreach ( $meta_boxes as $meta ) :
-
-		$value = stripslashes( get_post_meta( $post->ID, $meta['name'], true ) );
-
-		if ( $meta['type'] == 'text' )
-			wp_player_get_meta_text_input( $meta, $value );
-		elseif ( $meta['type'] == 'textarea' )
-			wp_player_get_meta_textarea( $meta, $value );
-		elseif ( $meta['type'] == 'radio' )
-			wp_player_get_meta_radio( $meta, $value );
-		elseif ( $meta['type'] == 'select' )
-			wp_player_get_meta_select( $meta, $value );
-		elseif ( $meta['type'] == 'upload' )
-			wp_player_get_meta_upload( $meta, $value );
-		
-	endforeach; ?>
-	</table>
-<?php
-}
 
 /**
  * Outputs a text input box with arguments from the 
@@ -196,17 +143,17 @@ function wpPlayer_page_meta_boxes() {
 
 function wp_player_get_meta_text_input( $args = array(), $value = false ) {
 
-	extract( $args ); ?>
+	extract( $args );
 
-	<tr>
-		<td>
-			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
-			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo esc_html( $value ); ?>" size="30" tabindex="30" style="width: 97%;" />
-			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-		</td>
-	</tr>
-	<?php
+	$html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
+	$html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html( $value ).'" class="wp-player-text" placeholder="'.$description.'" />';
+	$html .= '<input type="hidden" name="'.$name.'_noncename" id="'.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
+	if ( $button ){
+		$html .= "\n".'<button id="wp_player_get_xiami_id" type="button" class="button wp-player-button">'.$button.'</button>';
+	}
+	$html .= $output ? '</p></div>'."\n" : "\n";
+
+	echo $html;
 }
 
 /**
@@ -215,62 +162,19 @@ function wp_player_get_meta_text_input( $args = array(), $value = false ) {
  */
 function wp_player_get_meta_select( $args = array(), $value = false ) {
 
-	extract( $args ); ?>
+	extract( $args );
 
-	<tr>
-		<td>
-			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
-			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<select name="<?php echo $name; ?>" id="<?php echo $name; ?>">
-			<?php foreach ( $options as $option ) : ?>
-				<option <?php if ( $value == $option ) echo ' selected="selected"'; ?>>
-					<?php echo $option; ?>
-				</option>
-			<?php endforeach; ?>
-			</select>
-			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-		</td>
-	</tr>
-	<?php
+	$html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
+	$html .= '<select class="wp-player-select" name="'.$name.'" id="'.$name.'">';
+	foreach ( $options as $key => $option ){
+		$selected = ($key == $value) ? 'selected="selected"' : '';
+		$html .= '<option value="'.$key.'" '.$selected.'>'.$option.'</option>';
+	}
+	$html .= '<input type="hidden" name="'.$name.'_noncename" id="'.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
+	$html .= $output ? '</p></div>'."\n" : "\n";
+
+	echo $html;
 }
-
-/**
- * Outputs a textarea with arguments from the 
- * parameters.  Used for both the post/page meta boxes.
- */
-
-function wp_player_get_meta_textarea( $args = array(), $value = false ) {
-
-	extract( $args ); ?>
-
-	<tr>
-		<td>
-			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
-			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<textarea name="<?php echo $name; ?>" id="<?php echo $name; ?>" cols="60" rows="4" tabindex="30" style="width: 97%;"><?php echo esc_html( $value ); ?></textarea>
-			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-		</td>
-	</tr>
-	<?php
-}
-
-function wp_player_get_meta_radio( $args = array(), $value = false ) {
-	
-	extract( $args ); ?>
-	
-	<tr>
-		<td>
-			<p style="font-weight:bold;font-size:14px;"><?php echo $title; ?></p>
-			<div style="padding:0px 0px 5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<?php $i=0; foreach ( $options as $option ) : ?>
-				<label><?php echo $option; ?><input type="radio" value="<?php echo $i; ?>" name="<?php echo $name; ?>" <?php if ( $i == $value ) echo ' checked="checked"'; ?> /></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<?php $i++; endforeach; ?>
-			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-		</td>
-	</tr>
-	<?php
-}
-
 
 /**
  * Outputs a Upload box with arguments from the 
@@ -278,18 +182,15 @@ function wp_player_get_meta_radio( $args = array(), $value = false ) {
  */
 function wp_player_get_meta_upload( $args = array(), $value = false ) {
 
-	extract( $args ); ?>
+	extract( $args ); 
 
-	<tr>
-		<td>
-			<label for="<?php echo $name; ?>" style="font-weight:bold;font-size:14px;"><?php echo $title; ?></label>
-			<div style="margin-bottom:5px;font-size:12px;color:#666;display:block;"><?php echo $description; ?></div>
-			<input type="text" name="<?php echo $name; ?>" id="<?php echo $name; ?>" value="<?php echo esc_html( $value ); ?>" size="30" tabindex="30" style="width: 85%;" />
-			<input id="<?php echo $name; ?>_button" type="button" class="WP-Player-File button-secondary" value="点击上传" />
-			<input type="hidden" name="<?php echo $name; ?>_noncename" id="<?php echo $name; ?>_noncename" value="<?php echo wp_create_nonce( plugin_basename( __FILE__ ) ); ?>" />
-		</td>
-	</tr>
-	<?php
+	$html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
+	$html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html($value).'" class="wp-player-text" placeholder="'.$description.'" />'."\n";
+	$html .= '<input id="'.$name.'_button" type="button" class="WP-Player-File button-secondary" value="点击上传" />';
+	$html .= '<input type="hidden" name="'.$name.'_noncename" id='.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
+	$html .= $output ? '</p></div>'."\n" : "\n";
+
+	echo $html;
 }
 
 /**
@@ -300,34 +201,33 @@ function wp_player_get_meta_upload( $args = array(), $value = false ) {
 function wp_player_save_meta_data( $post_id ) {
 	global $post;
 
-	if ( 'page' == $_POST['post_type'] ){
-		$meta_boxes = array_merge( wp_player_page_meta_boxes() );
-	} else {
-		$meta_boxes = array_merge( wp_player_post_meta_boxes() );
-	}
-	
-	foreach ( $meta_boxes as $meta_box ) :
+	$meta_boxes = wp_player_meta_boxes( true, true );
 
-		if ( !wp_verify_nonce( $_POST[$meta_box['name'] . '_noncename'], plugin_basename( __FILE__ ) ) )
-			return $post_id;
+	foreach ( $meta_boxes as $meta_box ){
+		
+		if ( 'page' == $_POST['post_type'] && !current_user_can( 'edit_page', $post_id ) ){
+			return $post_id; 
+		}
 
-		if ( 'page' == $_POST['post_type'] && !current_user_can( 'edit_page', $post_id ) )
+		if ( 'post' == $_POST['post_type'] && !current_user_can( 'edit_post', $post_id ) ){
 			return $post_id;
+		}
 
-		elseif ( 'post' == $_POST['post_type'] && !current_user_can( 'edit_post', $post_id ) )
-			return $post_id;
+		if ( !wp_verify_nonce( $_POST[$meta_box['name'] . '_noncename'], plugin_basename( __FILE__ ) ) ){
+		 	return $post_id;
+		}
 
 		$data = stripslashes( $_POST[$meta_box['name']] );
 
-		if ( get_post_meta( $post_id, $meta_box['name'] ) == '' )
+		if ( get_post_meta( $post_id, $meta_box['name'] ) == '' ){
 			add_post_meta( $post_id, $meta_box['name'], $data, true );
-
-		elseif ( $data != get_post_meta( $post_id, $meta_box['name'], true ) )
+		} elseif ( $data != get_post_meta( $post_id, $meta_box['name'], true ) ){
 			update_post_meta( $post_id, $meta_box['name'], $data );
-
-		elseif ( $data == '' )
+		}elseif ( $data == '' ){
 			delete_post_meta( $post_id, $meta_box['name'], get_post_meta( $post_id, $meta_box['name'], true ) );
+		}
 
-	endforeach;
+	}
+
 }
 ?>

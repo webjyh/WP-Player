@@ -1,0 +1,59 @@
+/**
+ * @name     WP-Player CSS
+ * @desc     WP-Player 样式表
+ * @author   M.J
+ * @date     2014-12-21
+ * @update   2014-12-21
+ * @URL      http://webjyh.com
+ * @Github   https://github.com/webjyh/WP-Player
+ * @version  2.0.0
+ * 
+ */
+.wp-player { overflow: hidden; background: #FFF; width: 350px; min-width: 300px; margin: 10px auto; border: 1px solid #DDD; box-shadow: 0px 0px 10px rgba(0,0,0, 0.15); box-sizing: content-box; }
+.wp-player * { outline: 0; border-radius: 0; box-shadow: none; font-family: "Microsoft Yahei", arial; box-sizing: content-box; font-size: 12px; margin: 0; padding: 0; background: none; border: 0; text-indent: 0; line-height: 1.4; }
+
+.wp-player .wp-player-list ul li,
+.wp-player .wp-player-list ul li a,
+.wp-player .wp-player-list-order,
+.wp-player .wp-player-title,
+.wp-player .wp-player-author { overflow: hidden; white-space: nowrap; *white-space: normal; text-overflow: ellipsis; }
+
+.wp-player .wp-player-play-current,
+.wp-player .wp-player-list-btn,
+.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png) no-repeat -9999px -9999px; }
+
+.wp-player .wp-player-box { height: 90px; }
+.wp-player .wp-player-thumb { position: relative; float: left; width: 90px; height: 90px; overflow: hidden; }
+.wp-player .wp-player-thumb img { border-radius: 0; box-shadow: none; border: 0; display: block; width: 90px; height: 90px; vertical-align: top; }
+.wp-player .wp-player-playing { display: none; position: absolute; z-index: 2; top: 0; left: 0; width: 90px; height: 90px; background: #000; background: rgba(0, 0, 0, 0.4); filter: alpha(opacity=40); }
+.wp-player .wp-player-playing span { display: block; position: absolute; top: 50%; left: 50%; margin: -5px 0px 0px -5px; z-index: 3; width: 11px; height: 11px; background: url(../images/playing.gif) no-repeat; }
+.wp-player .wp-player-panel { margin-left: 100px; padding-top: 0px; padding-right: 10px; }
+.wp-player .wp-player-title { font-size: 14px; height: 24px; line-height: 24px; color: #555; }
+.wp-player .wp-player-author { line-height: 1.4; color: #999; margin-bottom: 5px; }
+.wp-player .wp-player-progress { height: 4px; margin-bottom: 7px; background: #e7e9eb; border-radius: 5px; }
+.wp-player .wp-player-seek-bar { width: 0; height: 100%; background: #DDD; cursor: pointer; border-radius: 5px; }
+.wp-player .wp-player-play-bar { position:relative; width: 0; height: 100%; background: #00cacf; border-radius: 5px; -webkit-transition: all 0.3s; -moz-transition: all 0.3s; transition: all 0.3s; }
+.wp-player .wp-player-play-current { display: block; position: absolute; top: -3px; right: -5px; width: 10px; height: 10px; background-position: 0px -57px }
+.wp-player .wp-player-controls-holder { position: relative; height: 28px; overflow: hidden; }
+.wp-player .wp-player-time { position: absolute; top: 0px; left: 0px; width: 45px; height: 28px; line-height: 28px; color: #9a9a9a; text-align: center; }
+.wp-player .wp-player-list-btn { cursor: pointer; position: absolute; top: 10px; right: 0px; width: 18px; height: 10px; background-position: -40px -57px }
+.wp-player .wp-player-controls { position: absolute; top: 0px; left: 50%; margin-left: -50px; width: 100px; height: 28px; }
+.wp-player .wp-player-controls a { outline: 0; margin: 0; padding: 0; border: 0; text-decoration: none; position: absolute; display: block; }
+.wp-player a.wp-player-previous,
+.wp-player a.wp-player-next { top: 9px; left: 0px; width: 16px; height: 10px; background-position: 0px -6px; _background-position: 0px -4px; }
+.wp-player a.wp-player-next { left: auto; right: 0px; background-position: -42px -6px; _background-position: -42px -4px; }
+.wp-player a.wp-player-play,
+.wp-player a.wp-player-stop { top: 0px; left: 36px; width: 28px; height: 28px; background-position: 0px -21px; }
+.wp-player a.wp-player-stop { display: none; background-position: -30px -21px; }
+
+.wp-player .wp-player-list { border-top: 1px solid #DDD; max-height: 301px; overflow: auto; }
+.wp-player .wp-player-list ul { margin: 0; padding: 0; border: 0; list-style: none; }
+.wp-player .wp-player-list ul li { margin: 0; padding: 0; border: 0; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; }
+.wp-player .wp-player-list ul li a { outline: 0; border: 0; height: 22px; overflow: hidden; line-height: 22px; padding: 0px 10px; display: block; *zoom: 1; color: #333; border-left: 4px solid #FFF; text-decoration: none; }
+.wp-player .wp-player-list ul li.odd { line-height: 22px; background: #f7f7f7; }
+.wp-player .wp-player-list ul li.odd a { line-height: 22px; border-color: #f7f7f7; }
+.wp-player .wp-player-list ul li.current a,
+.wp-player .wp-player-list ul li a:hover {  border-left: 4px solid #00cacf; }
+.wp-player .wp-player-list-title { line-height: 22px; }
+.wp-player .wp-player-list-author { line-height: 22px; float: right; padding-left: 10px; }
+.wp-player .wp-player-list-order { line-height: 22px; float: left; color: #9a9a9a; *zoom: 1; width: 25px; height: 100%; }
