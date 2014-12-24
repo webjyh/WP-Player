@@ -48,7 +48,7 @@
 
 .wp-player .wp-player-list { border-top: 1px solid #DDD; max-height: 301px; overflow: auto; }
 .wp-player .wp-player-list ul { margin: 0; padding: 0; border: 0; list-style: none; }
-.wp-player .wp-player-list ul li { margin: 0; padding: 0; border: 0; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; }
+.wp-player .wp-player-list ul li { background:#FFF; margin: 0; padding: 0; border: 0; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; }
 .wp-player .wp-player-list ul li a { outline: 0; border: 0; height: 22px; overflow: hidden; line-height: 22px; padding: 0px 10px; display: block; *zoom: 1; color: #333; border-left: 4px solid #FFF; text-decoration: none; }
 .wp-player .wp-player-list ul li.odd { line-height: 22px; background: #f7f7f7; }
 .wp-player .wp-player-list ul li.odd a { line-height: 22px; border-color: #f7f7f7; }
