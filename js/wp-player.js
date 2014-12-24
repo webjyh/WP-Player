@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2014-12-21
+ * @update   2014-12-24
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.0.0
+ * @version  2.0.1
  * 
  */
 ~function($, soundManager){
@@ -47,12 +47,33 @@
 				url:this.url,
 				headers: { nonce: this.nonce },
 				type: 'post',
-				data: {
-					action: 'wp_player',
-					type: type,
-					id: xiami
-				},
+				data: { action: 'wp_player', type: type, id: xiami },
 				dataType: 'json',
+				success: function( data ){
+					if ( data.code > 0 && data.data.length > 0 ){
+						_this.data = data.data;
+						_this.createList()
+						     .createSound()
+						     .addEvent();
+					} else {
+						_this.getSinaApi();
+					}
+				}
+			});
+		},
+		
+		// 如果主机抓取失败，采用新浪云
+		getSinaApi: function(){
+			var type = typeof this.attr.type == 'undefined' ? 'song' : this.attr.type,
+			    xiami = this.attr.xiami,
+			    _this = this;
+
+			$.ajax({
+				url:'http://wpplayer.sinaapp.com/',
+				type: 'get',
+				data: { act: type, id: xiami },
+				jsonp: 'callback',
+				dataType: 'jsonp',
 				success: function( data ){
 					if ( data.code > 0 && data.data.length > 0 ){
 						_this.data = data.data;

@@ -3,10 +3,10 @@
  * @desc     WP-Player 样式表
  * @author   M.J
  * @date     2014-12-21
- * @update   2014-12-21
+ * @update   2014-12-24
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
- * @version  2.0.0
+ * @version  2.0.1
  * 
  */
 .wp-player { overflow: hidden; background: #FFF; width: 350px; min-width: 300px; margin: 10px auto; border: 1px solid #DDD; box-shadow: 0px 0px 10px rgba(0,0,0, 0.15); box-sizing: content-box; }
@@ -24,7 +24,7 @@
 
 .wp-player .wp-player-box { height: 90px; }
 .wp-player .wp-player-thumb { position: relative; float: left; width: 90px; height: 90px; overflow: hidden; }
-.wp-player .wp-player-thumb img { border-radius: 0; box-shadow: none; border: 0; display: block; width: 90px; height: 90px; vertical-align: top; }
+.wp-player .wp-player-thumb img { padding: 0; margin: 0; border-radius: 0; box-shadow: none; border: 0; display: block; width: 90px; height: 90px; vertical-align: top; }
 .wp-player .wp-player-playing { display: none; position: absolute; z-index: 2; top: 0; left: 0; width: 90px; height: 90px; background: #000; background: rgba(0, 0, 0, 0.4); filter: alpha(opacity=40); }
 .wp-player .wp-player-playing span { display: block; position: absolute; top: 50%; left: 50%; margin: -5px 0px 0px -5px; z-index: 3; width: 11px; height: 11px; background: url(../images/playing.gif) no-repeat; }
 .wp-player .wp-player-panel { margin-left: 100px; padding-top: 0px; padding-right: 10px; }
