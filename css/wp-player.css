@@ -3,10 +3,10 @@
  * @desc     WP-Player 样式表
  * @author   M.J
  * @date     2014-12-21
- * @update   2014-12-24
+ * @update   2014-12-27
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
- * @version  2.0.1
+ * @version  2.1.0
  * 
  */
 .wp-player { overflow: hidden; background: #FFF; width: 350px; min-width: 300px; margin: 10px auto; border: 1px solid #DDD; box-shadow: 0px 0px 10px rgba(0,0,0, 0.15); box-sizing: content-box; }
@@ -49,7 +49,9 @@
 .wp-player .wp-player-list { border-top: 1px solid #DDD; max-height: 301px; overflow: auto; }
 .wp-player .wp-player-list ul { margin: 0; padding: 0; border: 0; list-style: none; }
 .wp-player .wp-player-list ul li { background:#FFF; margin: 0; padding: 0; border: 0; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; }
-.wp-player .wp-player-list ul li a { outline: 0; border: 0; height: 22px; overflow: hidden; line-height: 22px; padding: 0px 10px; display: block; *zoom: 1; color: #333; border-left: 4px solid #FFF; text-decoration: none; }
+.wp-player .wp-player-list ul li:after { content: ''; }
+.wp-player .wp-player-list ul li:before { content: ''; }
+.wp-player .wp-player-list ul li a { outline: 0; border: 0; background:none; height: 22px; overflow: hidden; line-height: 22px; padding: 0px 10px; display: block; *zoom: 1; color: #333; border-left: 4px solid #FFF; text-decoration: none; }
 .wp-player .wp-player-list ul li.odd { line-height: 22px; background: #f7f7f7; }
 .wp-player .wp-player-list ul li.odd a { line-height: 22px; border-color: #f7f7f7; }
 .wp-player .wp-player-list ul li.current a,

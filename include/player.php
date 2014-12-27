@@ -4,7 +4,7 @@
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
 
-	$WP_PLAYER_VERSION = '2.0.1';
+	$WP_PLAYER_VERSION = '2.1.0';
 
 	class wp_player_plugin {
 	
@@ -18,8 +18,6 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 			add_action( 'wp_enqueue_scripts', array( $this, 'wp_player_scripts') );
 			add_action( 'admin_print_styles', array( $this, 'wp_player_admin_css' ) );
 			add_action( "admin_print_scripts", array( $this, 'wp_player_admin_head' ) );
-			add_action( 'wp_ajax_nopriv_wp_player', array($this, 'wp_player_getJSON'));
-			add_action( 'wp_ajax_wp_player', array( $this, 'wp_player_getJSON' ) );
 			add_shortcode( 'player', array( $this, 'wp_player_shortcode' ) );
 
 			$this->options = get_option( 'wp_player_options' );
@@ -62,12 +60,9 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 			wp_localize_script( 'wp-player', 'wp_player_params', 
 				array(
 					'swf' => $this->base_dir.'js/',
-					'nonce' => wp_create_nonce('wp-player'),
-					'single' => ( is_single() || is_page() ) ? 'true' : 'false',
-					"url" =>  admin_url() . "admin-ajax.php"
+					'single' => ( is_single() || is_page() ) ? 'true' : 'false'
 			));
 		}
-
 
 		//add Admin WP-Player CSS
 		function wp_player_admin_css(){
@@ -84,58 +79,6 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 			wp_enqueue_script( 'wp-plugin-uploader', plugins_url( 'js/plugin-uploader.js', dirname( __FILE__ ) ), array('jquery','media-upload','thickbox'), $WP_PLAYER_VERSION );
 		}
 
-		//get XIAMI
-		function wp_player_getJSON(){
-			$type = htmlspecialchars($_POST['type']);
-			$id = intval( $_POST['id'] );
-			$nonce = $_SERVER['HTTP_NONCE'];
-
-			if ( !wp_verify_nonce($nonce, "wp-player") ) {
-				$JSON = array(
-					'code' =>  -1,
-					'msg' =>  '非法请求',
-					'data' => array()
-				);
-			} else {
-
-				switch ($type) {
-					case 'song': $ajaxType = 0; break;
-					case 'album': $ajaxType = 1; break;
-					case 'artist': $ajaxType = 2; break;
-					case 'collect': $ajaxType = 3; break;
-					default: $ajaxType = 0; break;
-				}
-
-				$URL = 'http://www.xiami.com/song/playlist/id/'.$id.'/type/'.$ajaxType;
-				$XML = @simplexml_load_file($URL);
-				$data = array();
-
-				if ( $XML && $XML->trackList ){
-					foreach ( $XML->trackList->track as $node ){
-						$track = array(
-							'title' => (string) $node->title,
-							'album_name' => (string) $node->album_name,
-							'artist' => (string) $node->artist,
-							'location' => $this->get_xiami_location( (string) $node->location ),
-							'lyric' => (string) $node->lyric_url,
-							'pic' => (string) $node->pic
-						);
-						array_push($data, $track);
-					}
-				}
-
-				$JSON = array(
-					'code' => 1,
-					'msg' => '请求成功',
-					'data' => $data
-				);
-			}
-
-			header('Content-type: application/json');
-			echo json_encode($JSON);
-			die();
-		}
-		
 		//add shortcode
 		function wp_player_shortcode( $atts ){
 			global $post;
@@ -154,39 +97,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 				$thumb = $this->base_dir.'images/default.png';
 			}
 			
-			return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-autoplay="'.$autoplay.'" data-type="'.$type.'" data-xiami="'.$xiami.'" data-title="'.$title.'" data-author="'.$author.'" data-address="'.$file.'" data-thumb="'.$thumb.'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$thumb.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title">Loading...</div><div class="wp-player-author">Loading...</div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time">00:00</div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div><div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-list"><ul></ul></div></div><!--wp-player end-->';
-		}
-
-		//get xiami location
-		function get_xiami_location( $str ){
-			try{
-				$a1=(int)$str{0};
-				$a2=substr($str, 1);
-				$a3=floor(strlen($a2) / $a1);
-				$a4=strlen($a2) % $a1;
-				$a5=array();
-				$a6=0;
-				$a7='';
-				$a8='';
-				for(;$a6 < $a4; ++$a6){
-						$a5[$a6]=substr($a2, ($a3 + 1) * $a6, ($a3 + 1));
-				}
-				for(;$a6 < $a1; ++$a6){
-						$a5[$a6]=substr($a2, $a3 * ($a6 - $a4) + ($a3 + 1) * $a4, $a3);
-				}
-				for($i=0, $a5_0_length=strlen($a5[0]); $i < $a5_0_length; ++$i){
-					for($j=0, $a5_length=count($a5); $j < $a5_length; ++$j){
-							$a7.=$a5[$j]{$i};
-					}
-				}
-				$a7=urldecode($a7);
-				for($i=0, $a7_length=strlen($a7); $i < $a7_length; ++$i){
-						$a8.=$a7{$i}==='^'?'0':$a7{$i};
-				}
-				return $a8;
-			} catch(Exception $e){
-				return false;
-			}
+			return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-autoplay="'.$autoplay.'" data-type="'.$type.'" data-xiami="'.$xiami.'" data-title="'.$title.'" data-author="'.$author.'" data-address="'.$file.'" data-thumb="'.$thumb.'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$thumb.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time">00:00</div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div><div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-list"><ul></ul></div></div><!--wp-player end-->';
 		}
 
 		//WP-Player Admin Option Page
