@@ -4,77 +4,99 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2014-12-27
+ * @update   2015-01-01
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.1.0
+ * @version  2.2.0
  * 
  */
-~function($, soundManager){
+~function($, soundManager) {
 
-    var WPPlayer = function(elem, options){
+    var WPPlayer = function(elem, options) {
 
         soundManager.setup({ url: options.swf, debugMode: false });
 
         this.index = 0;
+        this.url = options.url,
+        this.nonce = options.nonce,
         this.IE6 = !-[1,] && !window.XMLHttpRequest;
         this.single = options.single;
 
-        this.getDOM( $(elem) ).getAttr().init();
+        this.getDOM($(elem)).getAttr().init();
     };
 
     WPPlayer.prototype = {
 
         // 初始化
-        init: function(){
+        init: function() {
             var attr = this.attr,
                 DOM = this.DOM;
-
+            
+            DOM.time.text('00:00');
             DOM.title.text('Loading...');
             DOM.author.text('Loading...');
-
-            ( typeof attr.xiami !== 'undefined' && $.isNumeric( attr.xiami ) ) ? this.xiamiAction() : this.localAction();
+            
+            //各类型操作
+            if (!attr.xiami) {
+                this.localAction();
+            } else {
+                (attr.source == 'xiami') ? this.xiamiAction() :  this.neteaseAction();
+            }
+        },
+        
+        // 网易云音乐操作
+        neteaseAction: function() {
+            var type = this.attr.type,
+                id = this.attr.xiami,
+                _this = this;
+            $.ajax({ url: this.url, type: 'get', headers: { nonce: this.nonce }, data: { action: 'wpplayer', type: type, id: id } })
+             .done(function(json) {
+                if (json.status && json.data.trackList){
+                    _this.data = json.data.trackList;
+                    _this.createList().createSound().addEvent();
+                }
+             });
         },
 
         // 虾米类型操作
-        xiamiAction: function(){
-            var type = this.getXiamiType( this.attr.type ),
+        xiamiAction: function() {
+            var type = this.getXiamiType(this.attr.type),
                 xiami = this.attr.xiami,
                 _this = this,
                 url = 'http://www.xiami.com/song/playlist/id/'+xiami+'/type/'+type+'/cat/json?callback=?';
 
-            $.getJSON( url, function(json){
-                if ( json.status && json.data.trackList ){
-                    
-                    for (var i=0, length = json.data.trackList.length; i<length; i++ ){
+            $.getJSON(url, function(json) {
+                if (json.status && json.data.trackList) {
+                    for (var i=0, length = json.data.trackList.length; i<length; i++) {
                         json.data.trackList[i].location = _this.getXiamiLocation( json.data.trackList[i].location );
                     }
-                    
                     _this.data = json.data.trackList;
                     _this.createList().createSound().addEvent();
                 } else {
                     _this.getSinaApi();
                 }
+            }).fail(function() {
+                _this.getSinaApi();
             });
         },
 
         // 如果抓取失败，采用新浪云
-        getSinaApi: function(){
+        getSinaApi: function() {
             var type = typeof this.attr.type == 'undefined' ? 'song' : this.attr.type,
                 xiami = this.attr.xiami,
                 _this = this;
             
-            $.getJSON( 'http://wpplayer.sinaapp.com/?callback=?', { act: type, id: xiami }, function(data){
-                if ( data.code > 0 && data.data.length > 0 ){
+            $.getJSON('http://wpplayer.sinaapp.com/?callback=?', { act: type, id: xiami }, function(data) {
+                if (data.code > 0 && data.data.length) {
                     _this.data = data.data;
                     _this.createList().createSound().addEvent();
                 }
-            })
+            });
         },
 
         // 本地上传操作
-        localAction: function(){
+        localAction: function() {
             if (typeof this.attr.address === 'undefined') return false;
             var data = {
                 title: this.attr.title,
@@ -87,14 +109,14 @@
         },
 
         // 创建音乐列表
-        createList: function(){
+        createList: function() {
             var i = 0,
                 tpl = '',
                 DOM = this.DOM,
-                data = this.data;
+                data = this.data,
                 len = data.length;
 
-            for ( ; i<len; i++ ){
+            for (; i<len; i++) {
                 var odd = i % 2 ? 'odd' : '';
                 tpl += WPPlayer.template
                         .replace('{i}', i)
@@ -110,12 +132,12 @@
         },
 
         // 创建声音
-        createSound: function(val){
+        createSound: function(val) {
             var _this = this,
                 index = (typeof val === 'undefined') ? 0 : val,
                 data = this.data[index],
                 DOM = this.DOM,
-                autoplay = ( this.single == 'true' && this.attr.autoplay == "1" ) ? true : false;
+                autoplay = (this.single == 'true' && this.attr.autoplay == "1") ? true : false;
 
             //setting DOM
             DOM.title.text(data.title);
@@ -123,26 +145,26 @@
             DOM.thumb.find('img').attr('src', data.pic);
 
             soundManager.onready(function() {
-                if ( typeof _this.sound === 'object' ) _this.sound.destruct();
+                if (typeof _this.sound === 'object') _this.sound.destruct();
 
                 _this.timeReady = false;
 
                 //create sound
                 _this.sound = soundManager.createSound({
                         url: data.location,
-                        onload: function(){
+                        onload: function() {
                             _this.timeReady = true;
                         },
-                        onplay: function(){ _this.setPlay() },
-                        onresume: function(){ _this.setPlay() },
-                        onpause: function(){ _this.setStop() },
-                        onfinish: function(){ _this.nextSound() },
-                        whileplaying: function(){	
+                        onplay: function() { _this.setPlay() },
+                        onresume: function() { _this.setPlay() },
+                        onpause: function() { _this.setStop() },
+                        onfinish: function() { _this.nextSound() },
+                        whileplaying: function() {
                             var count, minute, second, pre,
                                 position = (this.position / this.duration)*100,
                                 playbar = position > 100 ? '100%' : position.toFixed(5) + '%';
 
-                            if ( _this.timeReady ) {
+                            if (_this.timeReady) {
                                 pre = '-';
                                 count = Math.floor((this.duration - this.position) / 1000);
                                 minute = _this.formatNumber( Math.floor( count / 60 ) );
@@ -154,17 +176,17 @@
                             }
 
                             DOM.playbar.width(playbar);
-                            DOM.time.text( pre + minute +':'+ second );
+                            DOM.time.text(pre + minute +':'+ second);
                         },
-                        whileloading: function(){
-                            var seekbar = this.bytesTotal ? ( this.bytesLoaded / this.bytesTotal ) * 100 : 100;
+                        whileloading: function() {
+                            var seekbar = this.bytesTotal ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
                             DOM.seekbar.width(seekbar+'%');
                         }
                     });
 
                 _this.soundEvent();
 
-                if ( typeof val !== 'undefined' || autoplay ) _this.sound.play();
+                if (typeof val !== 'undefined' || autoplay) _this.sound.play();
 
             });
 
@@ -172,26 +194,26 @@
         },
 
         //播放器事件
-        addEvent: function(){
+        addEvent: function() {
             var DOM = this.DOM,
                 _this = this;
 
             //showList
-            DOM.wrap.on('click', 'div.wp-player-list-btn', function(){
+            DOM.wrap.on('click', 'div.wp-player-list-btn', function() {
                 var has = $(this).hasClass('wp-player-open');
                 $(this)[has ? 'removeClass' : 'addClass']('wp-player-open');
                 DOM.list.stop(true,true)[has ? 'slideDown': 'slideUp']('fast');
             });
 
             // list select
-            DOM.list.on('click', 'li', function(){
-                var index = parseInt( $(this).attr('data-index'), 10),
+            DOM.list.on('click', 'li', function() {
+                var index = parseInt($(this).attr('data-index'), 10),
                     has = $(this).hasClass('current') && _this.sound.playState > 0;
-                ( index < 0 || index > _this.data.length-1 ) ? _this.index = 0 : _this.index = index;
+                (index < 0 || index > _this.data.length-1) ? _this.index = 0 : _this.index = index;
 
-                if ( has && !_this.sound.paused ){
+                if (has && !_this.sound.paused) {
                     _this.sound.pause();
-                } else if ( has && _this.sound.paused ){
+                } else if (has && _this.sound.paused) {
                     _this.sound.resume()
                 } else {
                     _this.reset().setList().createSound(_this.index);
@@ -202,59 +224,59 @@
         },
 
         // SoundManage Event
-        soundEvent: function(){
+        soundEvent: function() {
             var DOM = this.DOM,
                 _this = this;
 
             //sound play
-            DOM.seekbar.off().on('click', function(event){ _this.seekbar(event) });
-            DOM.play.off().on('click', function(){ _this.play() });
-            DOM.stop.off().on('click', function(){ _this.stop() });
+            DOM.seekbar.off().on('click', function(event) { _this.seekbar(event) });
+            DOM.play.off().on('click', function() { _this.play() });
+            DOM.stop.off().on('click', function() { _this.stop() });
 
             //prev, next
-            if ( this.data.length > 2 ){
-                DOM.previous.off().on('click', function(){ _this.prevSound() });
-                DOM.next.off().on('click', function(){ _this.nextSound() });
+            if (this.data.length > 2) {
+                DOM.previous.off().on('click', function() { _this.prevSound() });
+                DOM.next.off().on('click', function() { _this.nextSound() });
             }
 
         },
 
         // 播放进度 Event
-        seekbar: function(event){
+        seekbar: function(event) {
             var DOM = this.DOM,
                 _x = event.offsetX ? event.offsetX : (event.clientX - DOM.progress.offset().left).toFixed(0);
-            var offsetX = ( _x / DOM.progress.width() ) * this.sound.duration;
-            if ( offsetX < 0 ) offsetX = 0;
-            if ( offsetX > this.sound.duration ) offsetX = this.sound.duration;
+            var offsetX = (_x / DOM.progress.width()) * this.sound.duration;
+            if (offsetX < 0) offsetX = 0;
+            if (offsetX > this.sound.duration) offsetX = this.sound.duration;
             this.sound.setPosition(offsetX);
         },
 
         //播放 Event
-        play: function(){
+        play: function() {
             this.sound[this.sound.playState < 1 ? 'play' : 'resume']();
         },
 
         //暂停 Event
-        stop: function(){
+        stop: function() {
             this.sound.pause();
         },
 
         // 上一首 Event
-        prevSound: function(){
+        prevSound: function() {
             var minIndex = 0;
-            if ( --this.index < minIndex ) this.index = this.data.length-1;
+            if (--this.index < minIndex) this.index = this.data.length-1;
             this.reset().setList().createSound(this.index);
         },
 
         // 下一首 Event
-        nextSound: function(){
+        nextSound: function() {
             var maxIndex = this.data.length-1;
-            if ( ++this.index > maxIndex ) this.index = 0;
+            if (++this.index > maxIndex) this.index = 0;
             this.reset().setList().createSound(this.index);
         },
 
         // 设置当前播放状态
-        setPlay: function(){
+        setPlay: function() {
             var DOM = this.DOM;
             DOM.playing.stop(true,true)[this.IE6 ? 'show' : 'fadeIn']();
             DOM.play.hide();
@@ -263,7 +285,7 @@
         },
 
         // 设置当前暂停状态
-        setStop: function(){
+        setStop: function() {
             var DOM = this.DOM;
             DOM.playing.stop(true,true)[this.IE6 ? 'hide' : 'fadeOut']();
             DOM.play.show();
@@ -272,7 +294,7 @@
         },
 
         // 重置播放器界面
-        reset: function(){
+        reset: function() {
             var DOM = this.DOM;
             this.setStop();
             DOM.seekbar.width(0);
@@ -281,20 +303,20 @@
         },
 
         // 设置列表选中
-        setList: function(){
+        setList: function() {
             var DOM = this.DOM;
             DOM.list.find('li').removeClass('current').eq(this.index).addClass('current');
             return this;
         },
 
         // 获取播放器DOM
-        getDOM: function($elem){
+        getDOM: function($elem) {
             var elem = $elem[0].getElementsByTagName('*'),
                 DOM = {};
 
             DOM['wrap'] = $elem;
-            for (var i = 0; i < elem.length; i++){
-                if ( elem[i].className.indexOf('wp-player') > -1 ){
+            for (var i = 0; i < elem.length; i++) {
+                if (elem[i].className.indexOf('wp-player') > -1 ) {
                     var name = elem[i].className.replace('wp-player', '').replace(/-/g, '');
                     DOM[name] = $(elem[i]);
                 }
@@ -305,18 +327,15 @@
         },
 
         // 格式化时间
-        formatNumber: function(val){
-            var str = val < 0 ? '0' : val.toString();
-            if (str.length > 1){
-                return str;
-            }
-            return '0' + str;
+        formatNumber: function(val) {
+            return val.toString().length < 2 ? '0' + val : val;
         },
 
         // 获取播放器必须的属性
-        getAttr: function(){
+        getAttr: function() {
             var DOM = this.DOM;
             this.attr = {
+                source: DOM.wrap.attr('data-source'),
                 type: DOM.wrap.attr('data-type'),
                 xiami: DOM.wrap.attr('data-xiami'),
                 title: DOM.wrap.attr('data-title'),
@@ -329,9 +348,9 @@
         },
 
         // 虾米类型转换
-        getXiamiType: function( val ){
+        getXiamiType: function(val) {
             var type;
-            switch ( val ){
+            switch (val) {
                 case 'song': type = 0; break;
                 case 'album': type = 1; break;
                 case 'artist': type = 2; break;
@@ -343,7 +362,7 @@
         
         // 虾米地址转换
         // 参照 http://www.blackglory.me/xiami-getlocation-implementation-of-php-and-javascript/
-        getXiamiLocation: function( str ){
+        getXiamiLocation: function(str) {
             try {
                 var a1 = parseInt(str.charAt(0)),
                     a2 = str.substring(1),
@@ -379,9 +398,9 @@
     WPPlayer.template = '<li data-index="{i}" class="{class}"><a href="javascript:void(0);"><span class="wp-player-list-author">{author}</span><span class="wp-player-list-order">{serial}</span><span class="wp-player-list-title">{title}</span></a></li>';
 
     // 扩展 jQuery 对象
-    $.fn.WPPlayer = function( options ){
+    $.fn.WPPlayer = function(options) {
         return this.each(function(){
-            new WPPlayer( this, options );
+            new WPPlayer(this, options);
         });
     };
 
