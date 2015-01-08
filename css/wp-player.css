@@ -21,7 +21,7 @@
 .wp-player .wp-player-play-current,
 .wp-player .wp-player-list-btn,
 .wp-player .wp-player-lyrics-btn,
-.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png) no-repeat -9999px -9999px; }
+.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png?ver=2.3.0) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png?ver=2.3.0) no-repeat -9999px -9999px; }
 
 .wp-player .wp-player-box { height: 90px; }
 .wp-player .wp-player-thumb { position: relative; float: left; width: 90px; height: 90px; overflow: hidden; }
