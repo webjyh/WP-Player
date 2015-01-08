@@ -6,7 +6,7 @@
 * @date     2014-12-19
 * @update   2015-01-08
 * @URL      http://webjyh.com
-* @version  2.3.0
+* @version  2.3.1
 * 
 */
 jQuery(document).ready(function() {
@@ -53,7 +53,7 @@ jQuery(document).ready(function() {
             row = $val.match(regs[mark]);
 
         if (mark == 0 && !row && !jQuery.isNumeric($val)){
-            alert('您的当前站点只支持虾米音乐网址');
+            alert('\u60a8\u7684\u5f53\u524d\u7ad9\u70b9\u53ea\u652f\u6301\u867e\u7c73\u97f3\u4e50\u7f51\u5740');
             return false;
         }
 
@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
             result['id'] = row[2];
         } else {
             if (!jQuery.isNumeric($val)){
-                alert('获取音乐ID失败！')
+                alert('\u83b7\u53d6\u97f3\u4e50ID\u5931\u8d25\uff01');
             }
         }
 

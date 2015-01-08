@@ -8,7 +8,7 @@
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.3.0
+ * @version  2.3.1
  * 
  */
 ~function($, soundManager) {
@@ -183,7 +183,7 @@
                             DOM.playbar.width(playbar);
                             DOM.time.text(pre + minute +':'+ second);
                             
-                            _this.attr.lyric && _this.setLyric(this.position);
+                            if (_this.attr.lyric && _this.lyric) _this.setLyric(this.position);
                         },
                         whileloading: function() {
                             var seekbar = this.bytesTotal ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
@@ -317,6 +317,7 @@
         noLyric: function(val) {
             var DOM = this.DOM,
                 str = typeof val === 'undefined' ? '\u6682\u65e0\u6b4c\u8bcd' : val;
+            this.lyric = null;
             DOM.lyrics.children('ul').html('<li>'+str+'</li>');
         },
         
