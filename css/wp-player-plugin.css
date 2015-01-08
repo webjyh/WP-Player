@@ -3,9 +3,9 @@
  * @desc     WP-Player MetaBox 样式
  * @author   M.J
  * @date     2014-12-19
- * @update   2015-01-01
+ * @update   2015-01-08
  * @URL      http://webjyh.com
- * @version  2.2.0
+ * @version  2.3.0
  */
 .wp-player-wrap { padding: 10px; }
 .wp-player-wrap .wp-player-tabs { margin: 0px; border-bottom: 1px solid #EEE; height: 36px; }
@@ -18,3 +18,8 @@
 .wp-player-wrap .wp-player-inner.current { display: block; }
 .wp-player-wrap .wp-player-text { height: 28px; width: 50%; }
 .wp-player-wrap .wp-player-select { vertical-align: top; }
+
+@media screen and (min-width: 1200px) { .wp-player-wrap .wp-player-text { width: 35%; } }
+@media screen and (min-width: 1300px) { .wp-player-wrap .wp-player-text { width: 45%; } }
+@media screen and (min-width: 1400px) { .wp-player-wrap .wp-player-text { width: 50%; } }
+@media screen and (min-width: 1500px) { .wp-player-wrap .wp-player-text { width: 55%; } }

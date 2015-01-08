@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-01
+ * @update   2015-01-08
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.2.0
+ * @version  2.3.0
  * 
  */
 ~function($, soundManager) {
@@ -17,11 +17,16 @@
 
         soundManager.setup({ url: options.swf, debugMode: false });
 
-        this.index = 0;
-        this.url = options.url,
-        this.nonce = options.nonce,
-        this.IE6 = !-[1,] && !window.XMLHttpRequest;
-        this.single = options.single;
+        this.index = 0;                                     //当前播放歌曲
+        this.url = options.url;                             //Ajax请求地址
+        this.nonce = options.nonce;                         //WordPress 随机数
+        this.IE6 = !-[1,] && !window.XMLHttpRequest;        //是否是IE 6
+        this.single = options.single;                       //是否是详情页
+        this.lyric = null;                                  //当前歌曲歌词
+        this.offset = {};                                   //歌词滚动最小，最大值
+        this.mark = null;                                   //歌词滚动标记
+        this.lyricH = 300;                                  //歌词容器高度
+        this.line = 27;                                     //歌词单行行高
 
         this.getDOM($(elem)).getAttr().init();
     };
@@ -174,9 +179,11 @@
                                 minute = '00';
                                 second = '00';
                             }
-
+                            
                             DOM.playbar.width(playbar);
                             DOM.time.text(pre + minute +':'+ second);
+                            
+                            _this.attr.lyric && _this.setLyric(this.position);
                         },
                         whileloading: function() {
                             var seekbar = this.bytesTotal ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
@@ -185,6 +192,7 @@
                     });
 
                 _this.soundEvent();
+                _this.attr.lyric && _this.getLyric();
 
                 if (typeof val !== 'undefined' || autoplay) _this.sound.play();
 
@@ -192,17 +200,144 @@
 
             return this;
         },
+        
+        //创建歌词
+        createLyric: function(lyric) {
+        
+            //清空歌词
+            this.emptyLyric();
+            
+            var i = 0,
+                cache = [],
+                list = lyric.split("\n"),
+                len = list.length,
+                DOM = this.DOM,
+                reg = /\[(\d+:\d+.?\d+)\]/g,
+                regStr = /[^\[(\d+):(\d+.?\d+)\]\s*].+/g,
+                tpl = '';
+            
+            //匹配歌词
+            for (; i < len; i++) {
+                var arr = $.trim(list[i]).match(reg);
+                if ($.isArray(arr)) {
+                    var str = $.trim(list[i]).match(regStr);
+                    for (var j = 0; j < arr.length; j++){
+                        var t = arr[j].replace('[', '').replace(']', '').split(':'),
+                            time = (t[0] * 60) + Math.floor(t[1]);
+                        cache.push({time: time, lyric: $.isArray(str) ? str[0] : '&nbsp;' });
+                    }
+                }
+            }
 
+            if (!cache.length) {
+                this.noLyric();
+                return false;
+            }
+
+            //排序
+            i = 0;
+            len = cache.length;
+            for (; i < len; i++) {
+                for (var j = i; j < len; j++) {
+                    if ( cache[i].time > cache[j].time ) {
+                        var temp = cache[i];
+                        cache[i] = cache[j];
+                        cache[j] = temp;
+                    }
+                }
+            }
+            
+            //模板
+            this.lyric = {};
+            for (i = 0; i < len; i++) {
+                tpl += '<li>' + cache[i].lyric + '</li>';
+                this.lyric[cache[i].time] = i;
+            }
+            DOM['lyricList'] = $(tpl).appendTo(DOM.lyrics.children('ul'));
+            
+            var list = DOM.lyrics.children('ul').height(),
+                minH = Math.floor(this.lyricH / 2),
+                maxH = list - minH;
+
+            this.offset = {
+                min: Math.floor(minH / this.line),
+                max: Math.floor(maxH / this.line)
+            };
+        },
+
+        //获取歌词
+        getLyric: function() {
+            
+            //容错处理
+            this.noLyric(this.attr.xiami ? '\u6b63\u5728\u52a0\u8f7d\u6b4c\u8bcd...' : '\u6682\u65e0\u6b4c\u8bcd');
+            if (!this.attr.xiami) return false;
+
+            var _this = this,
+                url = this.url + '?action=wpplayerGetLrc&type=' + this.attr.source + '&id=' + this.data[this.index].song_id,
+                lyric = this.attr.source == 'xiami' ? this.data[this.index].lyric_url : '';
+
+            $.ajax({ url: url, type: 'post', headers: { nonce: this.nonce }, data: { lyric: lyric } })
+             .done(function(data) { 
+                (data.status && data.lyric) ? _this.createLyric(data.lyric) : _this.noLyric();
+             }).fail(function() { 
+                _this.noLyric(); 
+             });
+
+        },
+        
+        //设置歌词
+        setLyric: function(val) {
+            var DOM = this.DOM,
+                offset = this.offset,
+                time = Math.floor(val / 1000),
+                index = this.lyric && this.lyric[time],
+                scroll = 0;
+            
+            // setting class
+            if (typeof index !== 'undefined' && DOM.lyricList && this.mark != index) {
+                
+               if (index >= offset.min) scroll = index - offset.min;
+               if (index >= offset.max) scroll = offset.max - offset.min;
+               
+                DOM.lyricList.removeClass('current').eq(index).addClass('current');
+                DOM.lyrics.children('ul').css('margin-top', -scroll * this.line);
+                
+                this.mark = index;
+            }
+        },
+
+        //清空歌词
+        emptyLyric: function() {
+            var DOM = this.DOM;
+            this.lyric = null;
+            DOM.lyrics.children('ul').css('margin-top', 0).html('');
+        },
+        
+        //暂无歌词
+        noLyric: function(val) {
+            var DOM = this.DOM,
+                str = typeof val === 'undefined' ? '\u6682\u65e0\u6b4c\u8bcd' : val;
+            DOM.lyrics.children('ul').html('<li>'+str+'</li>');
+        },
+        
         //播放器事件
         addEvent: function() {
             var DOM = this.DOM,
                 _this = this;
 
-            //showList
+            //show list
             DOM.wrap.on('click', 'div.wp-player-list-btn', function() {
                 var has = $(this).hasClass('wp-player-open');
+                DOM.lyrics.children('ul').stop(true, true).hide();
                 $(this)[has ? 'removeClass' : 'addClass']('wp-player-open');
-                DOM.list.stop(true,true)[has ? 'slideDown': 'slideUp']('fast');
+                DOM.list.stop(true, true)[has ? 'slideDown': 'slideUp']('fast');
+            });
+
+            //show lyrics
+            DOM.wrap.on('click', 'div.wp-player-lyrics-btn', function() {
+                DOM.listbtn.addClass('wp-player-open');
+                DOM.list.hide();
+                DOM.lyrics.children('ul').stop(true, true).fadeIn();
             });
 
             // list select
@@ -239,6 +374,7 @@
                 DOM.next.off().on('click', function() { _this.nextSound() });
             }
 
+            return this;
         },
 
         // 播放进度 Event
@@ -249,6 +385,8 @@
             if (offsetX < 0) offsetX = 0;
             if (offsetX > this.sound.duration) offsetX = this.sound.duration;
             this.sound.setPosition(offsetX);
+            
+            DOM.lyricList && DOM.lyricList.removeClass('current');
         },
 
         //播放 Event
@@ -333,7 +471,10 @@
 
         // 获取播放器必须的属性
         getAttr: function() {
-            var DOM = this.DOM;
+            var DOM = this.DOM,
+                lyric = DOM.wrap.attr('data-lyric'),
+                open = typeof lyric === 'undefined' ? false : (lyric == 'open' ? true : false);
+            
             this.attr = {
                 source: DOM.wrap.attr('data-source'),
                 type: DOM.wrap.attr('data-type'),
@@ -342,7 +483,8 @@
                 author: DOM.wrap.attr('data-author'),
                 address: DOM.wrap.attr('data-address'),
                 thumb: DOM.wrap.attr('data-thumb'),
-                autoplay: DOM.wrap.attr('data-autoplay')
+                autoplay: DOM.wrap.attr('data-autoplay'),
+                lyric: open
             };
             return this;
         },

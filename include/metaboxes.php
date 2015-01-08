@@ -42,6 +42,7 @@ function wp_player_meta_boxes( $val = true, $apply = false ) {
                 ),
                 'output' => false
         ),
+        'wp_player_lyric_open' => array(),
         'mp3_xiami' => array(
                 'name' => 'mp3_xiami',
                 'type' => 'text',
@@ -84,6 +85,15 @@ function wp_player_meta_boxes( $val = true, $apply = false ) {
 
     if ( function_exists('curl_init') ){
         $arr1['wp_player_music_type']['options']['netease'] = '网易音乐';
+        $arr1['wp_player_lyric_open'] = array(
+                'name' => 'wp_player_lyric_open',
+                'type' => 'select',
+                'options' => array(
+                    'close' => '关闭歌词',
+                    'open' => '开启歌词'
+                ),
+                'output' => false
+        );
     }
 
     $meta_boxes = $val ? $arr1 : $arr2;
@@ -131,14 +141,15 @@ function wpPlayer_post_meta_boxes() {
             <div class="wp-player-inner current">
                 <p><strong>填写方法</strong></p>
                 <ol>
-                    <li class="red">请注意：如果您的选择音乐网站中出现了网易音乐，说明可以支持网易云音乐网址。</li>
+                    <li class="red">如果您的选择音乐网站中出现了网易音乐，说明可以支持网易云音乐网址。</li>
+                    <li class="red">如果您的选择项中出现了开启或关闭歌词功能，说明可以支持歌词预览。</li>
                     <li>在虾米网或网易云音乐打开喜欢的歌曲页面，复制歌曲页面的网址如：<code>http://www.xiami.com/song/2078022......</code></li>
                     <li>并将复制的网址填写到后面的表单内。音乐类型将根据网址自动做出选择。</li>
                     <li>点击<code>获取音乐ID</code>按钮，此时音乐ID出现在表单中。</li>
                     <li>将短代码 <code>[player autoplay="1"]</code> 填入您的文章内容中。</li>
                     <li>短代码中 <code>autoplay</code> 表示是否自动播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
                     <li>支持播放歌单：单音乐页面、专辑页面、艺人页面、精选集页面（即网易云音乐歌单）。</li>
-                    <li><code>PS：</code>建议使用网址来获取音乐ID。</li>
+                    <li><code>PS：</code>建议使用网址来获取音乐ID。<span class="red">歌词功能比较耗资源。</span></li>
                 </ol>
                 <div class="wp-player-input"><?php get_wp_player_metaBox(); ?></div>
             </div>
@@ -158,7 +169,7 @@ function wp_player_get_meta_text_input( $args = array(), $value = false ) {
     extract( $args );
 
     $html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
-    $html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html( $value ).'" class="wp-player-text" placeholder="'.$description.'" />';
+    $html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html( $value ).'" title="'.$description.'" class="wp-player-text" placeholder="'.$description.'" />';
     $html .= '<input type="hidden" name="'.$name.'_noncename" id="'.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
     if ( $button ){
         $html .= "\n".'<button id="wp_player_get_xiami_id" type="button" class="button wp-player-button">'.$button.'</button>';
@@ -197,7 +208,7 @@ function wp_player_get_meta_upload( $args = array(), $value = false ) {
     extract( $args ); 
 
     $html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
-    $html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html($value).'" class="wp-player-text" placeholder="'.$description.'" />'."\n";
+    $html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html($value).'" title="'.$description.'" class="wp-player-text" placeholder="'.$description.'" />'."\n";
     $html .= '<input id="'.$name.'_button" type="button" class="WP-Player-File button-secondary" value="点击上传" />';
     $html .= '<input type="hidden" name="'.$name.'_noncename" id='.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
     $html .= $output ? '</p></div>'."\n" : "\n";

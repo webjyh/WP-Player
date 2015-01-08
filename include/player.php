@@ -4,7 +4,7 @@
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
 
-    $WP_PLAYER_VERSION = '2.2.0';
+    $WP_PLAYER_VERSION = '2.3.0';
 
     class wp_player_plugin {
 
@@ -20,6 +20,8 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             add_action( 'admin_print_scripts', array( $this, 'wp_player_admin_head' ) );
             add_action( 'wp_ajax_nopriv_wpplayer', array( $this, 'wp_player_netease' ) );
             add_action( 'wp_ajax_wpplayer', array( $this, 'wp_player_netease' ) );
+            add_action( 'wp_ajax_nopriv_wpplayerGetLrc', array( $this, 'wp_player_getLrc' ) );
+            add_action( 'wp_ajax_wpplayerGetLrc', array( $this, 'wp_player_getLrc' ) );
             add_shortcode( 'player', array( $this, 'wp_player_shortcode' ) );
 
             $this->options = get_option( 'wp_player_options' );
@@ -82,6 +84,48 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             wp_enqueue_script('thickbox');
             wp_enqueue_script( 'wp-plugin-uploader', plugins_url( 'js/plugin-uploader.js', dirname( __FILE__ ) ), array('jquery','media-upload','thickbox'), $WP_PLAYER_VERSION );
         }
+
+        //get song lyric
+        function wp_player_getLrc(){
+            $type = $_GET['type'];
+            $id = intval($_GET['id']);
+            $lyric = $_POST['lyric'];
+            $nonce = $_SERVER['HTTP_NONCE'];
+
+            $url = ($type == 'xiami') ? $lyric : 'http://music.163.com/api/song/media?id='.$id;
+            $refere = ($type == 'xiami') ? 'http://www.xiami.com/;' : 'http://music.163.com;';
+
+            if ( !wp_verify_nonce($nonce, "wp-player") || !function_exists('curl_init') ) {
+                $JSON = array('status' =>  false, 'message' => '非法请求');
+            } else {
+                
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Cookie: appver=2.0.2' ));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
+                curl_setopt($ch, CURLOPT_REFERER, $refere);
+                $cexecute = curl_exec($ch);
+                curl_close($ch);
+
+                if ( $cexecute ) {
+                    if ( $type == 'xiami' ){
+                        $JSON = array('status' => true, 'lyric' => $cexecute);
+                    } else {
+                        $result = json_decode($cexecute, true);
+                        if ( $result['code'] == 200 && $result['lyric'] ){
+                            $JSON = array('status' => true, 'lyric' => $result['lyric']);
+                        }
+                    }
+                } else {
+                    $JSON = array('status' => true, 'lyric' => null);
+                }
+            }
+   
+            header('Content-type: application/json');
+            echo json_encode($JSON);
+            die();
+        }
         
         /** @name Get Netease Song
          *
@@ -132,6 +176,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                         
                         foreach ( $data as $keys => $data ){
                             $JSON['data']['trackList'][] = array(
+                                'song_id' => $data['id'],
                                 'title' => $data['name'],
                                 'album_name' => $data['album']['name'],
                                 'artist' => $data['artists'][0]['name'],
@@ -165,12 +210,20 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             $author = get_post_meta( $post->ID, 'mp3_author', true );
             $file = get_post_meta( $post->ID, 'mp3_address', true );
             $thumb = get_post_meta( $post->ID, 'mp3_thumb', true );
+            $lyric = get_post_meta( $post->ID, 'wp_player_lyric_open', true );
             $options = $this->options;
             
             if ( empty( $thumb ) ) $thumb = $this->base_dir.'images/default.png';
             if ( empty( $source ) ) $source = 'xiami';
+            if ( !empty( $lyric ) && $lyric == 'open' ) {
+                $open = $lyric;
+                $output = '<div class="wp-player-lyrics-btn" title="歌词"></div>';
+            } else {
+                $open = 'close';
+                $output = '';
+            }
             
-            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$source.'" data-autoplay="'.$autoplay.'" data-type="'.$type.'" data-xiami="'.$xiami.'" data-title="'.$title.'" data-author="'.$author.'" data-address="'.$file.'" data-thumb="'.$thumb.'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$thumb.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div><div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-list"><ul></ul></div></div><!--wp-player end-->';
+            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$source.'" data-autoplay="'.$autoplay.'" data-type="'.$type.'" data-xiami="'.$xiami.'" data-title="'.$title.'" data-author="'.$author.'" data-address="'.$file.'" data-thumb="'.$thumb.'" data-lyric="'.$open.'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$thumb.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div>'.$output.'<div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-main"><div class="wp-player-list"><ul></ul></div><div class="wp-player-lyrics"><ul></ul></div></div></div><!--wp-player end-->';
         }
 
         //WP-Player Admin Option Page
