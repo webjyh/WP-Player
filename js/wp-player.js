@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-08
+ * @update   2015-01-11
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.3.1
+ * @version  2.4.0
  * 
  */
 ~function($, soundManager) {
@@ -27,6 +27,7 @@
         this.mark = null;                                   //歌词滚动标记
         this.lyricH = 300;                                  //歌词容器高度
         this.line = 27;                                     //歌词单行行高
+        this.isMobile = 'createTouch' in document && !('onmousemove' in document) || /(iPhone|iPad|iPod)/i.test(navigator.userAgent);
 
         this.getDOM($(elem)).getAttr().init();
     };
@@ -41,6 +42,7 @@
             DOM.time.text('00:00');
             DOM.title.text('Loading...');
             DOM.author.text('Loading...');
+            if (attr.lyric && this.isMobile) DOM.lyricsbtn.hide();
             
             //各类型操作
             if (!attr.xiami) {
@@ -142,7 +144,7 @@
                 index = (typeof val === 'undefined') ? 0 : val,
                 data = this.data[index],
                 DOM = this.DOM,
-                autoplay = (this.single == 'true' && this.attr.autoplay == "1") ? true : false;
+                autoplay = (this.single == 'true' && this.attr.autoplay == "1" && !this.isMobile ) ? true : false;
 
             //setting DOM
             DOM.title.text(data.title);
@@ -152,7 +154,7 @@
             soundManager.onready(function() {
                 if (typeof _this.sound === 'object') _this.sound.destruct();
 
-                _this.timeReady = false;
+                _this.timeReady = _this.isMobile ? true : false;
 
                 //create sound
                 _this.sound = soundManager.createSound({
@@ -183,7 +185,7 @@
                             DOM.playbar.width(playbar);
                             DOM.time.text(pre + minute +':'+ second);
                             
-                            if (_this.attr.lyric && _this.lyric) _this.setLyric(this.position);
+                            if (_this.attr.lyric && _this.lyric && !_this.isMobile) _this.setLyric(this.position);
                         },
                         whileloading: function() {
                             var seekbar = this.bytesTotal ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
@@ -192,7 +194,8 @@
                     });
 
                 _this.soundEvent();
-                _this.attr.lyric && _this.getLyric();
+
+                if (_this.attr.lyric && !_this.isMobile) _this.getLyric();
 
                 if (typeof val !== 'undefined' || autoplay) _this.sound.play();
 
@@ -324,29 +327,32 @@
         //播放器事件
         addEvent: function() {
             var DOM = this.DOM,
-                _this = this;
-
+                _this = this,
+                eventType = this.isMobile ? 'touchend' : 'click',
+                startTx, startTy;
+            
             //show list
-            DOM.wrap.on('click', 'div.wp-player-list-btn', function() {
+            DOM.listbtn.on(eventType, function() {
                 var has = $(this).hasClass('wp-player-open');
                 DOM.lyrics.children('ul').stop(true, true).hide();
                 $(this)[has ? 'removeClass' : 'addClass']('wp-player-open');
-                DOM.list.stop(true, true)[has ? 'slideDown': 'slideUp']('fast');
+                DOM.list.show()[has ? 'removeClass': 'addClass']('wp-player-list-hide');
             });
 
             //show lyrics
-            DOM.wrap.on('click', 'div.wp-player-lyrics-btn', function() {
+            DOM.lyricsbtn.on(eventType, function() {
                 DOM.listbtn.addClass('wp-player-open');
                 DOM.list.hide();
                 DOM.lyrics.children('ul').stop(true, true).fadeIn();
             });
-
-            // list select
-            DOM.list.on('click', 'li', function() {
-                var index = parseInt($(this).attr('data-index'), 10),
-                    has = $(this).hasClass('current') && _this.sound.playState > 0;
+            
+            //select song event
+            var selectSong = function(val) {
+                var $elem = typeof val === 'undefined' ? $(this) : $(val).parents('li'),
+                    index = parseInt($elem.attr('data-index'), 10),
+                    has = $elem.hasClass('current') && _this.sound.playState > 0;
                 (index < 0 || index > _this.data.length-1) ? _this.index = 0 : _this.index = index;
-
+                
                 if (has && !_this.sound.paused) {
                     _this.sound.pause();
                 } else if (has && _this.sound.paused) {
@@ -354,7 +360,37 @@
                 } else {
                     _this.reset().setList().createSound(_this.index);
                 }
-            });
+            };
+
+            //判断当前是否为移动端
+            //如果是移动端采用 tap 替代 click 事件
+            if (!this.isMobile) {
+                DOM.list.on('click', 'li', function() { selectSong.call(this); });
+            } else {
+                DOM.list[0].addEventListener('touchstart',  function(e) {
+                    var nodeName = e.target.nodeName;
+                    if (nodeName === 'A' || nodeName === 'SPAN') {
+                        var touches = e.touches[0];
+                        startTx = touches.clientX;
+                        startTy = touches.clientY;
+                    }
+                }, false);
+                
+                DOM.list[0].addEventListener('touchend', function(e) {
+                    var nodeName = e.target.nodeName;
+                    if (nodeName === 'A' || nodeName === 'SPAN') {
+                        var touches = e.changedTouches[0],
+                            endTx = touches.clientX,
+                            endTy = touches.clientY;
+                        
+                        if( Math.abs(startTx - endTx) < 6 && Math.abs(startTy - endTy) < 6 ){
+                            selectSong(e.target);
+                            startTx = null;
+                            startTy = null;
+                        }
+                    }
+                }, false);
+            }
 
             return this;
         },
@@ -362,17 +398,20 @@
         // SoundManage Event
         soundEvent: function() {
             var DOM = this.DOM,
-                _this = this;
-
+                _this = this,
+                eventType = this.isMobile ? 'touchend' : 'click';
+            
             //sound play
-            DOM.seekbar.off().on('click', function(event) { _this.seekbar(event) });
-            DOM.play.off().on('click', function() { _this.play() });
-            DOM.stop.off().on('click', function() { _this.stop() });
+            if (!this.isMobile) {
+                DOM.seekbar.off().on(eventType, function(event) { _this.seekbar(event) });
+            }
+            DOM.play.off().on(eventType, function() { _this.play() });
+            DOM.stop.off().on(eventType, function() { _this.stop() });
 
             //prev, next
             if (this.data.length > 2) {
-                DOM.previous.off().on('click', function() { _this.prevSound() });
-                DOM.next.off().on('click', function() { _this.nextSound() });
+                DOM.previous.off().on(eventType, function() { _this.prevSound() });
+                DOM.next.off().on(eventType, function() { _this.nextSound() });
             }
 
             return this;
@@ -417,7 +456,7 @@
         // 设置当前播放状态
         setPlay: function() {
             var DOM = this.DOM;
-            DOM.playing.stop(true,true)[this.IE6 ? 'show' : 'fadeIn']();
+            DOM.playing.stop(true,true)[(this.IE6 || this.isMobile ) ? 'show' : 'fadeIn']();
             DOM.play.hide();
             DOM.stop.show();
             return this;
@@ -426,7 +465,7 @@
         // 设置当前暂停状态
         setStop: function() {
             var DOM = this.DOM;
-            DOM.playing.stop(true,true)[this.IE6 ? 'hide' : 'fadeOut']();
+            DOM.playing.stop(true,true)[(this.IE6 || this.isMobile ) ? 'hide' : 'fadeOut']();
             DOM.play.show();
             DOM.stop.hide();
             return this;

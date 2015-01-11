@@ -3,14 +3,14 @@
  * @desc     WP-Player 样式表
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-08
+ * @update   2015-01-11
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
- * @version  2.3.1
+ * @version  2.4.0
  * 
  */
 .wp-player { overflow: hidden; background: #FFF; width: 350px; min-width: 300px; margin: 10px auto; border: 1px solid #DDD; box-shadow: 0px 0px 10px rgba(0,0,0, 0.15); box-sizing: content-box; }
-.wp-player * { outline: 0; border-radius: 0; box-shadow: none; font-family: "Microsoft Yahei", arial; box-sizing: content-box; font-size: 12px; margin: 0; padding: 0; background: none; border: 0; text-indent: 0; line-height: 1.4; }
+.wp-player * { -webkit-user-select: none; -webkit-overflow-scrolling: touch; -webkit-tap-highlight-color: rgba(0,0,0,0); outline: 0; border-radius: 0; box-shadow: none; font-family: "Microsoft Yahei", arial; box-sizing: content-box; font-size: 12px; margin: 0; padding: 0; background: none; border: 0; text-indent: 0; line-height: 1.4; }
 
 .wp-player .wp-player-list ul li,
 .wp-player .wp-player-list ul li a,
@@ -21,9 +21,10 @@
 .wp-player .wp-player-play-current,
 .wp-player .wp-player-list-btn,
 .wp-player .wp-player-lyrics-btn,
-.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png?ver=2.3.1) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png?ver=2.3.1) no-repeat -9999px -9999px; }
+.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png?ver=2.4.0) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png?ver=2.4.0) no-repeat -9999px -9999px; }
 
-.wp-player .wp-player-box { height: 90px; }
+/* wp-player-play */
+.wp-player .wp-player-box { height: 90px; user-select: none; }
 .wp-player .wp-player-thumb { position: relative; float: left; width: 90px; height: 90px; overflow: hidden; }
 .wp-player .wp-player-thumb img { padding: 0 !important; margin: 0!important; border-radius: 0!important; box-shadow: none!important; border: 0!important; display: block; width: 90px; height: 90px; vertical-align: top; }
 .wp-player .wp-player-playing { display: none; position: absolute; z-index: 2; top: 0; left: 0; width: 90px; height: 90px; background: #000; background: rgba(0, 0, 0, 0.4); filter: alpha(opacity=40); }
@@ -48,10 +49,11 @@
 .wp-player a.wp-player-stop { top: 0px; left: 36px; width: 28px; height: 28px; background-position: 0px -21px; }
 .wp-player a.wp-player-stop { display: none; background-position: -30px -21px; }
 
-.wp-player .wp-player-main { position: relative; max-height: 300px; border-top: 1px solid #DDD; overflow: hidden; }
-.wp-player .wp-player-list { max-height: 300px; overflow: auto; }
+/* wp-player-list */
+.wp-player .wp-player-main { position: relative; }
+.wp-player .wp-player-list { border-top: 1px solid #DDD; -webkit-overflow-scrolling: touch; max-height: 300px; overflow: auto; }
 .wp-player .wp-player-list ul { margin: 0; padding: 0; border: 0; list-style: none; }
-.wp-player .wp-player-list ul li { background:#FFF; margin: 0 !important; padding: 0; border: 0 !important; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; }
+.wp-player .wp-player-list ul li { background:#FFF; margin: 0 !important; padding: 0; border: 0 !important; cursor: pointer; list-style: none; height: 22px; line-height: 22px; padding: 4px 0px; -webkit-transition: all 0.3s; -moz-transition: all 0.3s; transition: all 0.3s;  }
 .wp-player .wp-player-list ul li:after { content: ''; }
 .wp-player .wp-player-list ul li:before { content: ''; }
 .wp-player .wp-player-list ul li a { outline: 0!important; border: 0; background:none !important; height: 22px; overflow: hidden; line-height: 22px; padding: 0px 10px; display: block; *zoom: 1; color: #333; border-left: 4px solid #FFF; text-decoration: none; }
@@ -59,13 +61,37 @@
 .wp-player .wp-player-list ul li.odd a { line-height: 22px; border-color: #f7f7f7; }
 .wp-player .wp-player-list ul li.current a,
 .wp-player .wp-player-list ul li a:hover {  border-left: 4px solid #00cacf; }
+.wp-player .wp-player-list-hide { border-top: 0 !important; }
+.wp-player .wp-player-list-hide ul li { height: 0 !important; padding: 0 !important; }
 .wp-player .wp-player-list-title { line-height: 22px; }
 .wp-player .wp-player-list-author { line-height: 22px; float: right; padding-left: 10px; }
 .wp-player .wp-player-list-order { line-height: 22px; float: left; color: #9a9a9a; *zoom: 1; width: 25px; height: 100%; }
 
-.wp-player .wp-player-lyrics { max-height: 300px; overflow: hidden; }
-.wp-player .wp-player-lyrics ul { display: none; margin: 0; padding: 0; border: 0; list-style: none; -webkit-transition: all 0.3s linear; transition: all 0.3s linear; }
+/* wp-player-lyrics */
+.wp-player .wp-player-lyrics { border-top: 1px solid #DDD; max-height: 300px; overflow: hidden; }
+.wp-player .wp-player-lyrics ul { display: none; margin: 0; padding: 0; border: 0; list-style: none; -webkit-transition: all 0.3s linear; -moz-transition: all 0.3s; transition: all 0.3s linear; }
 .wp-player .wp-player-lyrics ul li { background: #FFF; margin: 0 !important; line-height: 1.5 !important; border: 0 !important; padding: 5px 10px !important; color: #666; font-size: 12px; text-align: center; list-style: none; -webkit-transition: color 0.5s linear; transition: color 0.5s linear; height: 17px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .wp-player .wp-player-lyrics ul li:after { content: ''; }
 .wp-player .wp-player-lyrics ul li:before { content: ''; }
 .wp-player .wp-player-lyrics ul li.current { font-size: 14px; color: #00cacf; }
+
+/* @media */
+@media screen and (max-width: 720px){
+	.wp-player { width: auto; min-width: 240px; }
+	.wp-player .wp-player-thumb { display: none; }
+	.wp-player .wp-player-panel { margin: 0; padding-left: 10px; width: auto; }
+	.wp-player .wp-player-list ul li { padding: 6px 0px; height: 26px; line-height: 26px; }
+	.wp-player .wp-player-list ul li a { height: 26px; line-height: 26px; font-size: 14px; }
+	.wp-player .wp-player-list-order,
+	.wp-player .wp-player-list-author,
+	.wp-player .wp-player-list-title { line-height: 26px; }
+	.wp-player-lyrics-btn,
+	.wp-player-lyrics ul { display: none; }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max-moz-device-pixel-ratio: 2) {
+	.wp-player .wp-player-play-current,
+	.wp-player .wp-player-list-btn,
+	.wp-player .wp-player-lyrics-btn,
+	.wp-player .wp-player-controls a { background-image: url(../images/wp_player_bg2x.png?ver=2.4.0); background-size: 58px auto; }
+}
