@@ -3,10 +3,10 @@
  * @desc     WP-Player 样式表
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-11
+ * @update   2015-01-13
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
- * @version  2.4.0
+ * @version  2.4.1
  * 
  */
 .wp-player { overflow: hidden; background: #FFF; width: 350px; min-width: 300px; margin: 10px auto; border: 1px solid #DDD; box-shadow: 0px 0px 10px rgba(0,0,0, 0.15); box-sizing: content-box; }
@@ -21,7 +21,7 @@
 .wp-player .wp-player-play-current,
 .wp-player .wp-player-list-btn,
 .wp-player .wp-player-lyrics-btn,
-.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png?ver=2.4.0) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png?ver=2.4.0) no-repeat -9999px -9999px; }
+.wp-player .wp-player-controls a { background: url(../images/wp_player_bg.png?ver=2.4.1) no-repeat -9999px -9999px; _background: url(../images/wp_player_bg_8.png?ver=2.4.1) no-repeat -9999px -9999px; }
 
 /* wp-player-play */
 .wp-player .wp-player-box { height: 90px; user-select: none; }
@@ -77,7 +77,7 @@
 
 /* @media */
 @media screen and (max-width: 720px){
-	.wp-player { width: auto; min-width: 240px; }
+	.wp-player { width: auto; min-width: 210px; }
 	.wp-player .wp-player-thumb { display: none; }
 	.wp-player .wp-player-panel { margin: 0; padding-left: 10px; width: auto; }
 	.wp-player .wp-player-list ul li { padding: 6px 0px; height: 26px; line-height: 26px; }
@@ -93,5 +93,5 @@
 	.wp-player .wp-player-play-current,
 	.wp-player .wp-player-list-btn,
 	.wp-player .wp-player-lyrics-btn,
-	.wp-player .wp-player-controls a { background-image: url(../images/wp_player_bg2x.png?ver=2.4.0); background-size: 58px auto; }
+	.wp-player .wp-player-controls a { background-image: url(../images/wp_player_bg2x.png?ver=2.4.1); background-size: 58px auto; }
 }

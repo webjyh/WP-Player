@@ -4,7 +4,7 @@
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
 
-    $WP_PLAYER_VERSION = '2.4.0';
+    $WP_PLAYER_VERSION = '2.4.1';
 
     class wp_player_plugin {
 

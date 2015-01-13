@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-11
+ * @update   2015-01-13
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.4.0
+ * @version  2.4.1
  * 
  */
 ~function($, soundManager) {
@@ -340,11 +340,13 @@
             });
 
             //show lyrics
-            DOM.lyricsbtn.on(eventType, function() {
-                DOM.listbtn.addClass('wp-player-open');
-                DOM.list.hide();
-                DOM.lyrics.children('ul').stop(true, true).fadeIn();
-            });
+            if (this.attr.lyric){
+                DOM.lyricsbtn.on(eventType, function() {
+                    DOM.listbtn.addClass('wp-player-open');
+                    DOM.list.hide();
+                    DOM.lyrics.children('ul').stop(true, true).fadeIn();
+                });
+            }
             
             //select song event
             var selectSong = function(val) {
