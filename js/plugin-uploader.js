@@ -4,9 +4,9 @@
 * @depend   jQuery
 * @author   M.J
 * @date     2014-12-19
-* @update   2015-01-29
+* @update   2015-02-05
 * @URL      http://webjyh.com
-* @version  2.4.2
+* @version  2.5.0
 * 
 */
 jQuery(document).ready(function() {
@@ -14,13 +14,16 @@ jQuery(document).ready(function() {
     //wp-player upload dialog
     var original_send_to_editor = window.send_to_editor;
     jQuery('.WP-Player-File').on('click', function() {
-        formField = jQuery(this).prev().attr('id');
+        var $elem = jQuery(this).prev(),
+            formField = $elem.attr('id');
+            
         tb_show('', 'media-upload.php?media-upload.php?type=image&amp;TB_iframe=true');
-        
-        window.send_to_editor = function(html){
-            fileUrl = jQuery( html ).attr('href');
-            jQuery( '#'+formField ).val( fileUrl );
+        window.send_to_editor = function(html) {
+            var fileUrl = jQuery( html ).attr('href'),
+                originVal = $elem.val();
+            
             tb_remove();
+            jQuery( '#'+formField ).val( originVal + "\r" +fileUrl );
             window.send_to_editor = original_send_to_editor;
         }
         return false;
@@ -45,15 +48,16 @@ jQuery(document).ready(function() {
             result = {},
             mark = null;
 
-        if (typeof $val === 'undefined' ||  $val == '') {
+        if (typeof $val === undefined ||  $val == '') {
             $elem.focus();
+            return false;
         }
 
         var reg = ($val.indexOf('163.com') > -1 && $len > 1) ? mark = 1 : mark = 0,
             row = $val.match(regs[mark]);
 
-        if (mark == 0 && !row && !jQuery.isNumeric($val)){
-            alert('\u60a8\u7684\u5f53\u524d\u7ad9\u70b9\u53ea\u652f\u6301\u867e\u7c73\u97f3\u4e50\u7f51\u5740');
+        if (mark == 0 && !row && !jQuery.isNumeric($val)) {
+            alert('\u83b7\u53d6\u97f3\u4e50ID\u5931\u8d25\uff01');
             return false;
         }
 
@@ -66,7 +70,7 @@ jQuery(document).ready(function() {
             }
         }
 
-        if ( jQuery.isArray( row ) && result['type'] && result['id'] ){
+        if ( jQuery.isArray( row ) && result['type'] && result['id'] ) {
             if ( result['type'] == 'playlist' ) result['type'] = 'collect';
             $elem.val( result['id'] );
             $type.children('option').prop('selected', false);

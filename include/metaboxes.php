@@ -55,30 +55,30 @@ function wp_player_meta_boxes( $val = true, $apply = false ) {
     $arr2 = array(
         'mp3_title' => array(
             'name' => 'mp3_title',
-            'type' => 'text',
+            'type' => 'textarea',
             'title' => '歌曲名',
-            'description' => '请填写歌曲名',
+            'description' => '请填写歌曲名，一行一个歌曲名，用于列表展示显示。',
             'output' => true
         ),
         'mp3_author' => array(
             'name' => 'mp3_author',
-            'type' => 'text',
+            'type' => 'textarea',
             'title' => '歌手名',
-            'description' => '请填写歌手名',
+            'description' => '请填写歌手名，一行一个歌手名，请与上面的歌曲名一一对应',
             'output' => true
         ),
         'mp3_address' => array(
             'name' => 'mp3_address',
             'type' => 'upload',
             'title' => '歌曲地址',
-            "description" => '在这里可以上传MP3文件，也可以自己填写MP3外链地址，默认请带上 http://',
+            "description" => '请填写歌曲地址，可以上传歌曲，也可以用链接地址（请记得带上http://），一行一个歌曲地址，请与上面的歌曲名一一对应。',
             'output' => true
         ),
         'mp3_thumb' => array(
             'name' => 'mp3_thumb',
             'type' => 'upload',
             'title' => '歌曲封面',
-            "description" => '上传封面，可以为空，WP-Player 将使用默认图',
+            "description" => '上传封面，可以为空，WP-Player 将使用默认图，上传图片时记得与歌曲名一一对应，如果此歌曲默认封面，则此行留空。',
             'output' => true
         )
     );
@@ -118,6 +118,7 @@ function get_wp_player_metaBox( $val = true ){
 		switch ($meta['type']) {
 			case 'text': wp_player_get_meta_text_input( $meta, $value ); break;
 			case 'select': wp_player_get_meta_select( $meta, $value ); break;
+            case 'textarea': wp_player_get_meta_textarea( $meta, $value ); break;
 			case 'upload': wp_player_get_meta_upload( $meta, $value ); break;
 			case 'button': wp_player_get_meta_button( $meta, $value ); break;
 		}
@@ -200,6 +201,23 @@ function wp_player_get_meta_select( $args = array(), $value = false ) {
 }
 
 /**
+ * Outputs a textarea box with arguments from the 
+ * parameters.  Used for both the post/page meta boxes.
+ */
+function wp_player_get_meta_textarea( $args = array(), $value = false ) {
+
+    extract( $args );
+    
+    $html .= '<div class="wp-player-textarea"><p><strong>'.$title.'</strong></p>';
+    $html .= '<textarea name="'.$name.'" id="'.$name.'">'.esc_html($value).'</textarea>'."\n";
+    $html .= '<p class="desc">'.$description.'</p>';
+    $html .= '<input type="hidden" name="'.$name.'_noncename" id='.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
+    $html .= '</div>';
+    
+    echo $html;
+}
+
+/**
  * Outputs a Upload box with arguments from the 
  * parameters.  Used for both the post/page meta boxes.
  */
@@ -207,11 +225,12 @@ function wp_player_get_meta_upload( $args = array(), $value = false ) {
 
     extract( $args ); 
 
-    $html .= $output ? '<div class="wp-player-input"><p>'.$title.'</p><p>' : "\n";
-    $html .= '<input type="text" name="'.$name.'" id="'.$name.'" value="'.esc_html($value).'" title="'.$description.'" class="wp-player-text" placeholder="'.$description.'" />'."\n";
+    $html .= '<div class="wp-player-textarea"><p><strong>'.$title.'</strong></p>';
+    $html .= '<textarea name="'.$name.'" id="'.$name.'">'.esc_html($value).'</textarea>'."\n";
     $html .= '<input id="'.$name.'_button" type="button" class="WP-Player-File button-secondary" value="点击上传" />';
+    $html .= '<p class="desc">'.$description.'</p>';
     $html .= '<input type="hidden" name="'.$name.'_noncename" id='.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
-    $html .= $output ? '</p></div>'."\n" : "\n";
+    $html .= '</div>'."\n";
 
     echo $html;
 }

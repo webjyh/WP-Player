@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-01-29
+ * @update   2015-02-05
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.4.2
+ * @version  2.5.0
  * 
  */
 ~function($, soundManager) {
@@ -105,13 +105,28 @@
         // 本地上传操作
         localAction: function() {
             if (typeof this.attr.address === 'undefined') return false;
-            var data = {
-                title: this.attr.title,
-                artist: this.attr.author,
-                location: this.attr.address,
-                pic: this.attr.thumb
-            };
-            this.data = [data];
+
+            function transformArray(str) {
+                var len = str.length-1;
+                return str.substr(0, len).split('|');
+            }
+            
+            var data = [],
+                title = transformArray(this.attr.title),
+                artist = transformArray(this.attr.author),
+                location = transformArray(this.attr.address),
+                pic = transformArray(this.attr.thumb);
+            
+            $.each(title, function(i) {
+                data.push({
+                    title: title[i],
+                    artist: artist[i],
+                    location: location[i],
+                    pic: pic[i]
+                });
+            });
+
+            this.data = data;
             this.createList().createSound().addEvent();
         },
 
@@ -188,7 +203,7 @@
                             if (_this.attr.lyric && _this.lyric && !_this.isMobile) _this.setLyric(this.position);
                         },
                         whileloading: function() {
-                            var seekbar = this.bytesTotal ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
+                            var seekbar = (this.bytesTotal && this.bytesLoaded != this.bytesTotal) ? (this.bytesLoaded / this.bytesTotal) * 100 : 100;
                             DOM.seekbar.width(seekbar+'%');
                         }
                     });
@@ -411,7 +426,7 @@
             DOM.stop.off().on(eventType, function() { _this.stop() });
 
             //prev, next
-            if (this.data.length > 2) {
+            if (this.data.length > 1) {
                 DOM.previous.off().on(eventType, function() { _this.prevSound() });
                 DOM.next.off().on(eventType, function() { _this.nextSound() });
             }

@@ -4,7 +4,7 @@
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
 
-    $WP_PLAYER_VERSION = '2.4.2';
+    $WP_PLAYER_VERSION = '2.5.0';
 
     class wp_player_plugin {
 
@@ -196,6 +196,49 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             echo json_encode($JSON);
             die();
         }
+        
+        //string replace
+        function each($str, $isThumb = false) {
+            $arr = explode("\r", $str);
+            $text = '';
+            if (is_array($arr)) {
+                foreach ( $arr as $val ) {
+                    $val = trim($val);
+                    if ( !empty($val) ) {
+                        $text .= $val.'|';
+                    } elseif ($isThumb) {
+                        $text .= $this->base_dir.'images/default.png'.'|';
+                   }
+                }
+            }
+            return $text;
+        }
+        
+        //get MetaBox
+        function get_source() {
+            global $post;
+            
+            $result = array();
+
+            $result['source'] = get_post_meta( $post->ID, 'wp_player_music_type', true ) ? ($source = 'xiami') : get_post_meta( $post->ID, 'wp_player_music_type', true );
+            $result['xiami'] = get_post_meta( $post->ID, 'mp3_xiami', true );
+            $result['title'] = $this->each(trim(get_post_meta( $post->ID, 'mp3_title', true )));
+            $result['author'] = $this->each(trim(get_post_meta( $post->ID, 'mp3_author', true )));
+            $result['file'] = $this->each(trim(get_post_meta( $post->ID, 'mp3_address', true )));
+            $result['thumb'] = $this->each(get_post_meta( $post->ID, 'mp3_thumb', true ), true);
+            $result['type'] = get_post_meta( $post->ID, 'mp3_xiami_type', true );
+            
+            $lyric = get_post_meta( $post->ID, 'wp_player_lyric_open', true );
+            if ( !empty( $lyric ) && $lyric == 'open' ) {
+                $result['open'] = $lyric;
+                $result['output'] = '<div class="wp-player-lyrics-btn" title="歌词"></div>';
+            } else {
+                $result['open'] = 'close';
+                $result['output'] = '';
+            }
+
+            return $result;
+        }
 
         //add shortcode
         function wp_player_shortcode( $atts ){
@@ -203,27 +246,10 @@ if ( !class_exists( 'wp_player_plugin' ) ){
 
             extract( shortcode_atts( array( 'autoplay' => 0 ), $atts ) );
             
-            $source = get_post_meta( $post->ID, 'wp_player_music_type', true );
-            $type = get_post_meta( $post->ID, 'mp3_xiami_type', true );
-            $xiami = get_post_meta( $post->ID, 'mp3_xiami', true );
-            $title = get_post_meta( $post->ID, 'mp3_title', true );
-            $author = get_post_meta( $post->ID, 'mp3_author', true );
-            $file = get_post_meta( $post->ID, 'mp3_address', true );
-            $thumb = get_post_meta( $post->ID, 'mp3_thumb', true );
-            $lyric = get_post_meta( $post->ID, 'wp_player_lyric_open', true );
-            $options = $this->options;
-            
-            if ( empty( $thumb ) ) $thumb = $this->base_dir.'images/default.png';
-            if ( empty( $source ) ) $source = 'xiami';
-            if ( !empty( $lyric ) && $lyric == 'open' ) {
-                $open = $lyric;
-                $output = '<div class="wp-player-lyrics-btn" title="歌词"></div>';
-            } else {
-                $open = 'close';
-                $output = '';
-            }
-            
-            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$source.'" data-autoplay="'.$autoplay.'" data-type="'.$type.'" data-xiami="'.$xiami.'" data-title="'.$title.'" data-author="'.$author.'" data-address="'.$file.'" data-thumb="'.$thumb.'" data-lyric="'.$open.'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$thumb.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div>'.$output.'<div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-main"><div class="wp-player-list"><ul></ul></div><div class="wp-player-lyrics"><ul></ul></div></div></div><!--wp-player end-->';
+            $data = $this->get_source();
+            $img = $this->base_dir.'images/default.png';
+
+            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$data['source'].'" data-autoplay="'.$autoplay.'" data-type="'.$data['type'].'" data-xiami="'.$data['xiami'].'" data-title="'.$data['title'].'" data-author="'.$data['author'].'" data-address="'.$data['file'].'" data-thumb="'.$data['thumb'].'" data-lyric="'.$data['open'].'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$img.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div>'.$data['output'].'<div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-main"><div class="wp-player-list"><ul></ul></div><div class="wp-player-lyrics"><ul></ul></div></div></div><!--wp-player end-->';
         }
 
         //WP-Player Admin Option Page
