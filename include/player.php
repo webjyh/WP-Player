@@ -4,7 +4,7 @@
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
 
-    $WP_PLAYER_VERSION = '2.5.0';
+    $WP_PLAYER_VERSION = '2.5.1';
 
     class wp_player_plugin {
 
@@ -219,8 +219,9 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             global $post;
             
             $result = array();
-
-            $result['source'] = get_post_meta( $post->ID, 'wp_player_music_type', true ) ? ($source = 'xiami') : get_post_meta( $post->ID, 'wp_player_music_type', true );
+            $source = get_post_meta( $post->ID, 'wp_player_music_type', true );
+            
+            $result['source'] =  empty($source) ? 'xiami' : $source;
             $result['xiami'] = get_post_meta( $post->ID, 'mp3_xiami', true );
             $result['title'] = $this->each(trim(get_post_meta( $post->ID, 'mp3_title', true )));
             $result['author'] = $this->each(trim(get_post_meta( $post->ID, 'mp3_author', true )));

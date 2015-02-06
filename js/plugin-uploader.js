@@ -4,9 +4,9 @@
 * @depend   jQuery
 * @author   M.J
 * @date     2014-12-19
-* @update   2015-02-05
+* @update   2015-02-06
 * @URL      http://webjyh.com
-* @version  2.5.0
+* @version  2.5.1
 * 
 */
 jQuery(document).ready(function() {
