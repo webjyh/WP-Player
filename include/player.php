@@ -25,7 +25,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             add_shortcode( 'player', array( $this, 'wp_player_shortcode' ) );
 
             $this->options = get_option( 'wp_player_options' );
-            $this->base_dir = WP_PLUGIN_URL.'/'. dirname( plugin_basename( dirname( __FILE__ ) ) ).'/';
+            $this->base_dir = plugin_dir_url( __FILE__ ) . '../';
             $this->admin_dir = site_url( '/wp-admin/options-general.php?page=player.php' );
             
         }
