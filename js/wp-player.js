@@ -182,7 +182,7 @@
                         	if (success) {
                         		_this.timeReady = true;
                         	} else {
-                        		_this.randSound();
+                        		randplay ? _this.randSound() : _this.nextSound();
                         	}
                         },
                         onplay: function() { _this.setPlay() },
