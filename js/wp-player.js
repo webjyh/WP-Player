@@ -159,7 +159,8 @@
                 index = (typeof val === 'undefined') ? 0 : val,
                 data = this.data[index],
                 DOM = this.DOM,
-                autoplay = (this.single == 'true' && this.attr.autoplay == "1" && !this.isMobile ) ? true : false;
+                autoplay = (this.single == 'true' && this.attr.autoplay == "1" && !this.isMobile ) ? true : false,
+                randplay = (this.single == 'true' && this.attr.randplay == "1" ) ? true : false;
 
             //setting DOM
             DOM.title.text(data.title);
@@ -174,13 +175,22 @@
                 //create sound
                 _this.sound = soundManager.createSound({
                         url: data.location,
-                        onload: function() {
-                            _this.timeReady = true;
+                        // onload: function() {
+                        //     _this.timeReady = true;
+                        // },
+                        onload: function(success) {
+                        	if (success) {
+                        		_this.timeReady = true;
+                        	} else {
+                        		_this.randSound();
+                        	}
                         },
                         onplay: function() { _this.setPlay() },
                         onresume: function() { _this.setPlay() },
                         onpause: function() { _this.setStop() },
-                        onfinish: function() { _this.nextSound() },
+                        //onfinish: function() { _this.nextSound() },
+                        //下一首随机
+                        onfinish: function() { randplay ? _this.randSound() : _this.nextSound() },
                         whileplaying: function() {
                             var count, minute, second, pre,
                                 position = (this.position / this.duration)*100,
@@ -416,7 +426,8 @@
         soundEvent: function() {
             var DOM = this.DOM,
                 _this = this,
-                eventType = this.isMobile ? 'touchend' : 'click';
+                eventType = this.isMobile ? 'touchend' : 'click',
+                randplay = (this.single == 'true' && this.attr.randplay == "1" ) ? true : false;
             
             //sound play
             if (!this.isMobile) {
@@ -428,7 +439,9 @@
             //prev, next
             if (this.data.length > 1) {
                 DOM.previous.off().on(eventType, function() { _this.prevSound() });
-                DOM.next.off().on(eventType, function() { _this.nextSound() });
+                //DOM.next.off().on(eventType, function() { _this.nextSound() });
+                //下一首随机播放
+                DOM.next.off().on(eventType, function() { randplay ? _this.randSound() : _this.nextSound() });
             }
 
             return this;
@@ -467,6 +480,13 @@
         nextSound: function() {
             var maxIndex = this.data.length-1;
             if (++this.index > maxIndex) this.index = 0;
+            this.reset().setList().createSound(this.index);
+        },
+        
+        // 随机下一首 Event
+        randSound: function() {
+            var maxIndex = this.data.length-1;
+            this.index = Math.floor(Math.random()*(maxIndex+1));
             this.reset().setList().createSound(this.index);
         },
 
@@ -541,6 +561,7 @@
                 address: DOM.wrap.attr('data-address'),
                 thumb: DOM.wrap.attr('data-thumb'),
                 autoplay: DOM.wrap.attr('data-autoplay'),
+                randplay: DOM.wrap.attr('data-randplay'),
                 lyric: open
             };
             return this;

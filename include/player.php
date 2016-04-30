@@ -245,12 +245,12 @@ if ( !class_exists( 'wp_player_plugin' ) ){
         function wp_player_shortcode( $atts ){
             global $post;
 
-            extract( shortcode_atts( array( 'autoplay' => 0 ), $atts ) );
+            extract( shortcode_atts( array( 'autoplay' => 0 , 'randplay' => 0), $atts ) );
             
             $data = $this->get_source();
             $img = $this->base_dir.'images/default.png';
 
-            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$data['source'].'" data-autoplay="'.$autoplay.'" data-type="'.$data['type'].'" data-xiami="'.$data['xiami'].'" data-title="'.$data['title'].'" data-author="'.$data['author'].'" data-address="'.$data['file'].'" data-thumb="'.$data['thumb'].'" data-lyric="'.$data['open'].'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$img.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div>'.$data['output'].'<div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-main"><div class="wp-player-list"><ul></ul></div><div class="wp-player-lyrics"><ul></ul></div></div></div><!--wp-player end-->';
+            return '<!--wp-player start--><div class="wp-player" data-wp-player="wp-player" data-source="'.$data['source'].'" data-autoplay="'.$autoplay.'" data-randplay="'.$randplay.'" data-type="'.$data['type'].'" data-xiami="'.$data['xiami'].'" data-title="'.$data['title'].'" data-author="'.$data['author'].'" data-address="'.$data['file'].'" data-thumb="'.$data['thumb'].'" data-lyric="'.$data['open'].'"><div class="wp-player-box"><div class="wp-player-thumb"><img src="'.$img.'" width="90" height="90" alt="" /><div class="wp-player-playing"><span></span></div></div><div class="wp-player-panel"><div class="wp-player-title"></div><div class="wp-player-author"></div><div class="wp-player-progress"><div class="wp-player-seek-bar"><div class="wp-player-play-bar"><span class="wp-player-play-current"></span></div></div></div><div class="wp-player-controls-holder"><div class="wp-player-time"></div><div class="wp-player-controls"><a href="javascript:;" class="wp-player-previous" title="上一首"></a><a href="javascript:;" class="wp-player-play" title="播放"></a><a href="javascript:;" class="wp-player-stop" title="暂停"></a><a href="javascript:;" class="wp-player-next" title="下一首"></a></div>'.$data['output'].'<div class="wp-player-list-btn" title="歌单"></div></div></div></div><div class="wp-player-main"><div class="wp-player-list"><ul></ul></div><div class="wp-player-lyrics"><ul></ul></div></div></div><!--wp-player end-->';
         }
 
         //WP-Player Admin Option Page
@@ -270,6 +270,7 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                                     <ol>
                                         <li><code>[player]</code></li>
                                         <li><code>[player autoplay="0"]</code></li>
+                                        <li><code>[player autoplay="0" randplay="0"]</code></li>
                                     </ol>
                                 </td>
                             </tr>
@@ -281,8 +282,9 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                                         <li>在虾米网或网易云音乐打开喜欢的歌曲页面，复制歌曲页面的网址如：<code>http://www.xiami.com/song/2078022......</code></li>
                                         <li>并将复制的网址填写到后面的表单内。音乐类型将根据网址自动做出选择。</li>
                                         <li>点击<code>获取音乐ID</code>按钮，此时音乐ID出现在表单中。</li>
-                                        <li>将短代码 <code>[player autoplay="1"]</code> 填入您的文章内容中。</li>
+                                        <li>将短代码 <code>[player autoplay="1" randplay="0"]</code> 填入您的文章内容中。</li>
                                         <li>短代码中 <code>autoplay</code> 表示是否自动播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
+                                        <li>短代码中 <code>randplay</code> 表示是否随机播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
                                         <li>支持播放歌单：单音乐页面、专辑页面、艺人页面、精选集页面。</li>
                                         <li><code>PS：</code>建议使用网址来获取音乐ID。</li>
                                     </ol>
