@@ -4,11 +4,11 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-02-06
+ * @update   2016-04-30
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.5.1
+ * @version  2.5.2
  * 
  */
 ~function($, soundManager) {
