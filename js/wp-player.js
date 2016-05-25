@@ -306,7 +306,7 @@
 
             $.ajax({ url: url, type: 'post', headers: { nonce: this.nonce }, data: { lyric: lyric } })
              .done(function(data) { 
-                (data.status && data.lyric) ? _this.createLyric(data.lyric) : _this.noLyric();
+                (data != null && data.status && data.lyric) ? _this.createLyric(data.lyric) : _this.noLyric();
              }).fail(function() { 
                 _this.noLyric(); 
              });

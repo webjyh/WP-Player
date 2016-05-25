@@ -139,30 +139,32 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             $type = $_GET['type'];
             $id = intval($_GET['id']);
             $nonce = $_SERVER['HTTP_NONCE'];
-            $header = array(
-                "Accept:*/*",
-                "Accept-Language:zh-CN,zh;q=0.8",
-                "Cache-Control:no-cache",
-                "Connection:keep-alive",
-                "Content-Type:application/x-www-form-urlencoded;charset=UTF-8",
-                "Cookie:visited=true;",
-                "DNT:1",
-                "Host:music.163.com",
-                "Pragma:no-cache",
-                "Referer:http://music.163.com/outchain/player?type={$type}&id={$id}&auto=1&height=430&bg=e8e8e8",
-                "User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36"
-            );
+            
             
             if ( !wp_verify_nonce($nonce, "wp-player") || !function_exists('curl_init') ) {
                 $JSON = array('status' =>  false, 'message' => '非法请求');
             } else {
                 switch ( $type ) {
-                    case 'song': $url = "http://music.163.com/api/song/detail/?ids=[$id]"; $key = 'songs'; break;
-                    case 'album': $url = "http://music.163.com/api/album/$id?id=$id"; $key = 'album'; break;
-                    case 'artist': $url = "http://music.163.com/api/artist/$id?id=$id"; $key = 'artist'; break;
-                    case 'collect': $url = "http://music.163.com/api/playlist/detail?id=$id"; $key = 'result'; break;
-                    default: $url = "http://music.163.com/api/song/detail/?ids=[$id]"; $key = 'songs';
+                    case 'song': $url = "http://music.163.com/api/song/detail/?ids=[$id]"; $key = 'songs'; $typeid = 2; break;
+                    case 'album': $url = "http://music.163.com/api/album/$id?id=$id"; $key = 'album'; $typeid = 1; break;
+                    case 'artist': $url = "http://music.163.com/api/artist/$id?id=$id"; $key = 'artist'; $typeid = 3; break;
+                    case 'collect': $url = "http://music.163.com/api/playlist/detail?id=$id"; $key = 'result'; $typeid = 0; break;
+                    default: $url = "http://music.163.com/api/song/detail/?ids=[$id]"; $key = 'songs'; $typeid = 2; 
                 }
+
+                $header = array(
+                    "Accept:*/*",
+                    "Accept-Language:zh-CN,zh;q=0.8",
+                    "Cache-Control:no-cache",
+                    "Connection:keep-alive",
+                    "Content-Type:application/x-www-form-urlencoded;charset=UTF-8",
+                    "Cookie:visited=true;",
+                    "DNT:1",
+                    "Host:music.163.com",
+                    "Pragma:no-cache",
+                    "Referer:http://music.163.com/outchain/player?type={$typeid}&id={$id}&auto=1&height=430&bg=e8e8e8",
+                    "User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36"
+                );
 
                 $ch = curl_init($url);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
