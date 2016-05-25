@@ -139,6 +139,19 @@ if ( !class_exists( 'wp_player_plugin' ) ){
             $type = $_GET['type'];
             $id = intval($_GET['id']);
             $nonce = $_SERVER['HTTP_NONCE'];
+            $header = array(
+                "Accept:*/*",
+                "Accept-Language:zh-CN,zh;q=0.8",
+                "Cache-Control:no-cache",
+                "Connection:keep-alive",
+                "Content-Type:application/x-www-form-urlencoded;charset=UTF-8",
+                "Cookie:visited=true;",
+                "DNT:1",
+                "Host:music.163.com",
+                "Pragma:no-cache",
+                "Referer:http://music.163.com/outchain/player?type={$type}&id={$id}&auto=1&height=430&bg=e8e8e8",
+                "User-Agent:Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.155 Safari/537.36"
+            );
             
             if ( !wp_verify_nonce($nonce, "wp-player") || !function_exists('curl_init') ) {
                 $JSON = array('status' =>  false, 'message' => '非法请求');
@@ -151,14 +164,11 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                     default: $url = "http://music.163.com/api/song/detail/?ids=[$id]"; $key = 'songs';
                 }
 
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $url);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Cookie: appver=2.0.2' ));
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_BINARYTRANSFER, true);
-                curl_setopt($ch, CURLOPT_REFERER, 'http://music.163.com/;');
+                $ch = curl_init($url);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                 $cexecute = curl_exec($ch);
-                curl_close($ch);
+                @curl_close($ch);
                 
                 if ( $cexecute ) {
                     $result = json_decode($cexecute, true);
@@ -175,12 +185,13 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                         }
                         
                         foreach ( $data as $keys => $data ){
+                            $mp3_url = str_replace("http://m", "http://p", $data['mp3Url']);
                             $JSON['data']['trackList'][] = array(
                                 'song_id' => $data['id'],
                                 'title' => $data['name'],
                                 'album_name' => $data['album']['name'],
                                 'artist' => $data['artists'][0]['name'],
-                                'location' => $data['mp3Url'],
+                                'location' => $mp3_url,
                                 'pic' => $data['album']['blurPicUrl'].'?param=90x90'
                             );
                         }
