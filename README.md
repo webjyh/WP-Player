@@ -1,4 +1,4 @@
-WP-Player V2.5.1
+WP-Player V2.5.2
 =========
 
 WP-Player 一个迷你歌曲播放器，支持多歌曲播放，支持使用虾米歌曲地址，也支持自定义上传音乐。
@@ -8,6 +8,10 @@ WP-Player 一个迷你歌曲播放器，支持多歌曲播放，支持使用虾�
 
 ### 声明
 本插件仅供个人学习研究使用，请勿作为各种商业用户，音乐版权归网易云音乐 music.163.com 和虾米音乐 www.xiami.com 所有。
+
+### Update Ver 2.5.2 (2016-04-30)
+1. 增加随机播放功能，使用“[player randplay="1"]”开启
+2. 当歌曲加载失败时，播放下一首
 
 ### Update Ver 2.5.1 (2015-02-06)
 1. 紧急修复因2.5.0版本导致网易云音乐不能播放问题
@@ -136,5 +140,6 @@ PS：一篇文章只能插入一个播放器，因为用了MetaBox获取参数�
 WordPress 插件使用短代码来实现调用播放器
 ```html
 [player]
-[player loop="1" autoplay="1"]
+[player autoplay="1"]
+[player autoplay="1" randplay="1"]
 ```

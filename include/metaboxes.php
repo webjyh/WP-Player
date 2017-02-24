@@ -149,6 +149,7 @@ function wpPlayer_post_meta_boxes() {
                     <li>点击<code>获取音乐ID</code>按钮，此时音乐ID出现在表单中。</li>
                     <li>将短代码 <code>[player autoplay="1"]</code> 填入您的文章内容中。</li>
                     <li>短代码中 <code>autoplay</code> 表示是否自动播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
+                    <li>短代码中 <code>randplay</code> 表示是否随机播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
                     <li>支持播放歌单：单音乐页面、专辑页面、艺人页面、精选集页面（即网易云音乐歌单）。</li>
                     <li><code>PS：</code>建议使用网址来获取音乐ID。<span class="red">歌词功能比较耗资源。</span></li>
                 </ol>

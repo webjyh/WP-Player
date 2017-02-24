@@ -4,12 +4,12 @@
  * @depend   jQuery, SoundManager2
  * @author   M.J
  * @date     2014-12-21
- * @update   2015-02-06
+ * @update   2016-04-30
  * @URL      http://webjyh.com
  * @Github   https://github.com/webjyh/WP-Player
  * @reutn    {jQuery}
- * @version  2.5.1
- * 
+ * @version  2.5.2
+ *
  */
 ~function($, soundManager) {
 
@@ -38,12 +38,12 @@
         init: function() {
             var attr = this.attr,
                 DOM = this.DOM;
-            
+
             DOM.time.text('00:00');
             DOM.title.text('Loading...');
             DOM.author.text('Loading...');
             if (attr.lyric && this.isMobile) DOM.lyricsbtn.hide();
-            
+
             //各类型操作
             if (!attr.xiami) {
                 this.localAction();
@@ -51,7 +51,7 @@
                 (attr.source == 'xiami') ? this.xiamiAction() :  this.neteaseAction();
             }
         },
-        
+
         // 网易云音乐操作
         neteaseAction: function() {
             var type = this.attr.type,
@@ -64,6 +64,32 @@
                     _this.createList().createSound().addEvent();
                 }
              });
+        },
+
+        // getTrackURL 源码来自 Chrome 扩展程序 网易云音乐增强器(Netease Music Enhancement) by wanmingtom@gmail.com
+        getTrackURL: function(dfsId) {
+            var byte1 = '3' + 'g' + 'o' + '8' + '&' + '$' + '8' + '*' + '3'
+                + '*' + '3' + 'h' + '0' + 'k' + '(' + '2' + ')' + '2';
+            var byte1Length = byte1.length;
+            var byte2 = dfsId + '';
+            var byte2Length = byte2.length;
+            var byte3 = [];
+            for (var i = 0; i < byte2Length; i++) {
+                byte3[i] = byte2.charCodeAt(i) ^ byte1.charCodeAt(i % byte1Length);
+            };
+
+            byte3 = byte3.map(function(i) {
+                return String.fromCharCode(i)
+            }).join('');
+
+            results = CryptoJS.MD5(byte3).toString(CryptoJS.enc.Base64);
+            results = results.replace(/\//g, '_').replace(/\+/g, '-');
+
+            // 如果需要修改使用的 cdn，请修改下面的地址
+            // 可用的服务器有 ['m1', 'm2', 'p1', 'p2']
+            // 使用 p1 或 p2 的 cdn 可解决境外用户无法播放的问题
+            var url = 'http://p1.music.126.net/' + results + '/' + byte2 + '.mp3';
+            return url;
         },
 
         // 虾米类型操作
@@ -93,7 +119,7 @@
             var type = typeof this.attr.type == 'undefined' ? 'song' : this.attr.type,
                 xiami = this.attr.xiami,
                 _this = this;
-            
+
             $.getJSON('http://wpplayer.sinaapp.com/?callback=?', { act: type, id: xiami }, function(data) {
                 if (data.code > 0 && data.data.length) {
                     _this.data = data.data;
@@ -110,13 +136,13 @@
                 var len = str.length-1;
                 return str.substr(0, len).split('|');
             }
-            
+
             var data = [],
                 title = transformArray(this.attr.title),
                 artist = transformArray(this.attr.author),
                 location = transformArray(this.attr.address),
                 pic = transformArray(this.attr.thumb);
-            
+
             $.each(title, function(i) {
                 data.push({
                     title: title[i],
@@ -148,7 +174,7 @@
                         .replace('{title}', data[i].title);
             }
 
-            $(tpl).appendTo(DOM.list.children('ul')).first().addClass('current');
+            $(tpl).appendTo(DOM.list.children('ul')).eq(this.index).addClass('current');
 
             return this;
         },
@@ -156,10 +182,24 @@
         // 创建声音
         createSound: function(val) {
             var _this = this,
-                index = (typeof val === 'undefined') ? 0 : val,
-                data = this.data[index],
-                DOM = this.DOM,
-                autoplay = (this.single == 'true' && this.attr.autoplay == "1" && !this.isMobile ) ? true : false;
+                autoplay = (this.single == 'true' && this.attr.autoplay == "1" && !this.isMobile ) ? true : false,
+                randplay = (this.single == 'true' && this.attr.randplay == "1" ) ? true : false;
+                if(randplay){
+                    var maxIndex = this.data.length-1;
+                    var randIndex = Math.floor(Math.random()*(maxIndex+1));
+                    //开始播放为随机
+                    this.index = (typeof val === 'undefined') ? randIndex : val;
+                }else{
+                    this.index = (typeof val === 'undefined') ? 0 : val;
+                }
+            var data = this.data[this.index],
+                DOM = this.DOM;
+
+            // 设置列表选中
+            this.setList();
+
+            // 设置初始位置
+            if (typeof val === 'undefined') this.setScrollTop();
 
             //setting DOM
             DOM.title.text(data.title);
@@ -173,14 +213,23 @@
 
                 //create sound
                 _this.sound = soundManager.createSound({
-                        url: data.location,
-                        onload: function() {
-                            _this.timeReady = true;
+                        url: _this.getTrackURL(data.dfs_id),
+                        // onload: function() {
+                        //     _this.timeReady = true;
+                        // },
+                        onload: function(success) {
+                        	if (success) {
+                        		_this.timeReady = true;
+                        	} else {
+                        		randplay ? _this.randSound() : _this.nextSound();
+                        	}
                         },
                         onplay: function() { _this.setPlay() },
                         onresume: function() { _this.setPlay() },
                         onpause: function() { _this.setStop() },
-                        onfinish: function() { _this.nextSound() },
+                        //onfinish: function() { _this.nextSound() },
+                        //下一首随机
+                        onfinish: function() { randplay ? _this.randSound() : _this.nextSound() },
                         whileplaying: function() {
                             var count, minute, second, pre,
                                 position = (this.position / this.duration)*100,
@@ -196,10 +245,10 @@
                                 minute = '00';
                                 second = '00';
                             }
-                            
+
                             DOM.playbar.width(playbar);
                             DOM.time.text(pre + minute +':'+ second);
-                            
+
                             if (_this.attr.lyric && _this.lyric && !_this.isMobile) _this.setLyric(this.position);
                         },
                         whileloading: function() {
@@ -218,13 +267,13 @@
 
             return this;
         },
-        
+
         //创建歌词
         createLyric: function(lyric) {
-        
+
             //清空歌词
             this.emptyLyric();
-            
+
             var i = 0,
                 cache = [],
                 list = lyric.split("\n"),
@@ -233,7 +282,7 @@
                 reg = /\[(\d+:\d+.?\d+)\]/g,
                 regStr = /[^\[(\d+):(\d+.?\d+)\]\s*].+/g,
                 tpl = '';
-            
+
             //匹配歌词
             for (; i < len; i++) {
                 var arr = $.trim(list[i]).match(reg);
@@ -264,7 +313,7 @@
                     }
                 }
             }
-            
+
             //模板
             this.lyric = {};
             for (i = 0; i < len; i++) {
@@ -272,7 +321,7 @@
                 this.lyric[cache[i].time] = i;
             }
             DOM['lyricList'] = $(tpl).appendTo(DOM.lyrics.children('ul'));
-            
+
             var list = DOM.lyrics.children('ul').height(),
                 minH = Math.floor(this.lyricH / 2),
                 maxH = list - minH;
@@ -285,7 +334,7 @@
 
         //获取歌词
         getLyric: function() {
-            
+
             //容错处理
             this.noLyric(this.attr.xiami ? '\u6b63\u5728\u52a0\u8f7d\u6b4c\u8bcd...' : '\u6682\u65e0\u6b4c\u8bcd');
             if (!this.attr.xiami) return false;
@@ -295,14 +344,14 @@
                 lyric = this.attr.source == 'xiami' ? this.data[this.index].lyric_url : '';
 
             $.ajax({ url: url, type: 'post', headers: { nonce: this.nonce }, data: { lyric: lyric } })
-             .done(function(data) { 
-                (data.status && data.lyric) ? _this.createLyric(data.lyric) : _this.noLyric();
-             }).fail(function() { 
-                _this.noLyric(); 
+             .done(function(data) {
+                (data != null && data.status && data.lyric) ? _this.createLyric(data.lyric) : _this.noLyric();
+             }).fail(function() {
+                _this.noLyric();
              });
 
         },
-        
+
         //设置歌词
         setLyric: function(val) {
             var DOM = this.DOM,
@@ -310,16 +359,16 @@
                 time = Math.floor(val / 1000),
                 index = this.lyric && this.lyric[time],
                 scroll = 0;
-            
+
             // setting class
             if (typeof index !== 'undefined' && DOM.lyricList && this.mark != index) {
-                
+
                if (index >= offset.min) scroll = index - offset.min;
                if (index >= offset.max) scroll = offset.max - offset.min;
-               
+
                 DOM.lyricList.removeClass('current').eq(index).addClass('current');
                 DOM.lyrics.children('ul').css('margin-top', -scroll * this.line);
-                
+
                 this.mark = index;
             }
         },
@@ -330,7 +379,7 @@
             this.lyric = null;
             DOM.lyrics.children('ul').css('margin-top', 0).html('');
         },
-        
+
         //暂无歌词
         noLyric: function(val) {
             var DOM = this.DOM,
@@ -338,14 +387,14 @@
             this.lyric = null;
             DOM.lyrics.children('ul').html('<li>'+str+'</li>');
         },
-        
+
         //播放器事件
         addEvent: function() {
             var DOM = this.DOM,
                 _this = this,
                 eventType = this.isMobile ? 'touchend' : 'click',
                 startTx, startTy;
-            
+
             //show list
             DOM.listbtn.on(eventType, function() {
                 var has = $(this).hasClass('wp-player-open');
@@ -362,14 +411,14 @@
                     DOM.lyrics.children('ul').stop(true, true).fadeIn();
                 });
             }
-            
+
             //select song event
             var selectSong = function(val) {
                 var $elem = typeof val === 'undefined' ? $(this) : $(val).parents('li'),
                     index = parseInt($elem.attr('data-index'), 10),
                     has = $elem.hasClass('current') && _this.sound.playState > 0;
                 (index < 0 || index > _this.data.length-1) ? _this.index = 0 : _this.index = index;
-                
+
                 if (has && !_this.sound.paused) {
                     _this.sound.pause();
                 } else if (has && _this.sound.paused) {
@@ -392,14 +441,14 @@
                         startTy = touches.clientY;
                     }
                 }, false);
-                
+
                 DOM.list[0].addEventListener('touchend', function(e) {
                     var nodeName = e.target.nodeName;
                     if (nodeName === 'A' || nodeName === 'SPAN') {
                         var touches = e.changedTouches[0],
                             endTx = touches.clientX,
                             endTy = touches.clientY;
-                        
+
                         if( Math.abs(startTx - endTx) < 6 && Math.abs(startTy - endTy) < 6 ){
                             selectSong(e.target);
                             startTx = null;
@@ -416,8 +465,9 @@
         soundEvent: function() {
             var DOM = this.DOM,
                 _this = this,
-                eventType = this.isMobile ? 'touchend' : 'click';
-            
+                eventType = this.isMobile ? 'touchend' : 'click',
+                randplay = (this.single == 'true' && this.attr.randplay == "1" ) ? true : false;
+
             //sound play
             if (!this.isMobile) {
                 DOM.seekbar.off().on(eventType, function(event) { _this.seekbar(event) });
@@ -428,7 +478,9 @@
             //prev, next
             if (this.data.length > 1) {
                 DOM.previous.off().on(eventType, function() { _this.prevSound() });
-                DOM.next.off().on(eventType, function() { _this.nextSound() });
+                //DOM.next.off().on(eventType, function() { _this.nextSound() });
+                //下一首随机播放
+                DOM.next.off().on(eventType, function() { randplay ? _this.randSound() : _this.nextSound() });
             }
 
             return this;
@@ -442,7 +494,7 @@
             if (offsetX < 0) offsetX = 0;
             if (offsetX > this.sound.duration) offsetX = this.sound.duration;
             this.sound.setPosition(offsetX);
-            
+
             DOM.lyricList && DOM.lyricList.removeClass('current');
         },
 
@@ -460,14 +512,21 @@
         prevSound: function() {
             var minIndex = 0;
             if (--this.index < minIndex) this.index = this.data.length-1;
-            this.reset().setList().createSound(this.index);
+            this.reset().setList().setScrollTop().createSound(this.index);
         },
 
         // 下一首 Event
         nextSound: function() {
             var maxIndex = this.data.length-1;
             if (++this.index > maxIndex) this.index = 0;
-            this.reset().setList().createSound(this.index);
+            this.reset().setList().setScrollTop().createSound(this.index);
+        },
+
+        // 随机下一首 Event
+        randSound: function() {
+            var maxIndex = this.data.length-1;
+            this.index = Math.floor(Math.random()*(maxIndex+1));
+            this.reset().setList().setScrollTop().createSound(this.index);
         },
 
         // 设置当前播放状态
@@ -501,6 +560,24 @@
         setList: function() {
             var DOM = this.DOM;
             DOM.list.find('li').removeClass('current').eq(this.index).addClass('current');
+
+            return this;
+        },
+
+        //设置当前播放的滚动条位置
+        setScrollTop: function() {
+        	var listNodeHeight = $('.wp-player-list ul li')[0].clientHeight;
+        	var listHeight = $('.wp-player-list')[0].clientHeight;
+        	var listNodeCount = parseInt(listHeight / listNodeHeight);
+        	//设置为居中
+        	var pos = parseInt(listNodeCount / 2);
+        	//计算坐标
+        	var selectTop = $('.current').offset().top - $('.wp-player-list').offset().top + $('.wp-player-list').scrollTop() - (pos - 1) * listNodeHeight;
+
+            $('.wp-player-list').stop().animate({
+                scrollTop:selectTop
+            },500);
+
             return this;
         },
 
@@ -531,7 +608,7 @@
             var DOM = this.DOM,
                 lyric = DOM.wrap.attr('data-lyric'),
                 open = typeof lyric === 'undefined' ? false : (lyric == 'open' ? true : false);
-            
+
             this.attr = {
                 source: DOM.wrap.attr('data-source'),
                 type: DOM.wrap.attr('data-type'),
@@ -541,6 +618,7 @@
                 address: DOM.wrap.attr('data-address'),
                 thumb: DOM.wrap.attr('data-thumb'),
                 autoplay: DOM.wrap.attr('data-autoplay'),
+                randplay: DOM.wrap.attr('data-randplay'),
                 lyric: open
             };
             return this;
@@ -558,7 +636,7 @@
             }
             return type;
         },
-        
+
         // 虾米地址转换
         // 参照 http://www.blackglory.me/xiami-getlocation-implementation-of-php-and-javascript/
         getXiamiLocation: function(str) {
