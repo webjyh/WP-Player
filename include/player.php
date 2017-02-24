@@ -59,7 +59,8 @@ if ( !class_exists( 'wp_player_plugin' ) ){
                 wp_enqueue_script( 'jquery' );
             }
             wp_enqueue_script( 'wp-player-jplayer', $this->base_dir . 'js/soundmanager2.js', array(), $WP_PLAYER_VERSION, true );
-            wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array(), $WP_PLAYER_VERSION, true );
+            wp_enqueue_script( 'crypto', $this->base_dir . 'js/crypto.js',array(),"1.0.0",true); 
+            wp_enqueue_script( 'wp-player', $this->base_dir . 'js/wp-player.js', array('jquery', 'crypto'), $WP_PLAYER_VERSION, true );
 
             wp_localize_script( 'wp-player', 'wp_player_params',
                 array(
