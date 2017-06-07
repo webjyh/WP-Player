@@ -22,35 +22,50 @@ function wp_player_create_meta_box() {
  * function filterable to add options through child themes.
  */
 function wp_player_meta_boxes( $val = true, $apply = false ) {
-    $arr1 = array(
-        'wp_player_music_type' => array(
-                'name' => 'wp_player_music_type',
+    if ( function_exists('curl_init') ) {
+        $arr1 = array(
+            'wp_player_music_type' => array(
+                    'name' => 'wp_player_music_type',
+                    'type' => 'select',
+                    'options' => array(
+                        'netease' => '网易音乐',
+                        'xiami' => '虾米音乐',
+                        'tencent' => 'QQ 音乐',
+                        'baidu' => '百度音乐'
+                    ),
+                    'output' => false
+            ),
+            'mp3_xiami_type' => array(
+                    'name' => 'mp3_xiami_type',
+                    'type' => 'select',
+                    'options' => array(
+                        'song' => '歌曲页面',
+                        'album' => '专辑页面',
+                        'artist' => '歌手页面',
+                        'collect' => '歌单页面'
+                    ),
+                    'output' => false
+            ),
+            'wp_player_lyric_open' => array(
+                'name' => 'wp_player_lyric_open',
                 'type' => 'select',
                 'options' => array(
-                    'xiami' => '虾米音乐'
+                    'close' => '关闭歌词',
+                    'open' => '开启歌词'
                 ),
                 'output' => false
-        ),
-        'mp3_xiami_type' => array(
-                'name' => 'mp3_xiami_type',
-                'type' => 'select',
-                'options' => array(
-                    'song' => '单音乐页面',
-                    'album' => '专辑页面',
-                    'artist' => '艺人页面', 
-                    'collect' => '精选集页面'
-                ),
-                'output' => false
-        ),
-        'wp_player_lyric_open' => array(),
-        'mp3_xiami' => array(
-                'name' => 'mp3_xiami',
-                'type' => 'text',
-                'description' => '即可填音乐写地址ID，也可填写虾米音乐网址 http://......',
-                'button' => '获取音乐ID',
-                'output' => false
-        )
-    );
+            ),
+            'mp3_xiami' => array(
+                    'name' => 'mp3_xiami',
+                    'type' => 'text',
+                    'description' => '即可填音乐写ID，也可填写音乐网址 http://......',
+                    'button' => '获取音乐ID',
+                    'output' => false
+            )
+        );
+    } else {
+        $arr1 = array();
+    }
 
     $arr2 = array(
         'mp3_title' => array(
@@ -82,20 +97,6 @@ function wp_player_meta_boxes( $val = true, $apply = false ) {
             'output' => true
         )
     );
-
-    if ( function_exists('curl_init') ){
-        $arr1['wp_player_music_type']['options']['netease'] = '网易音乐';
-        $arr1['wp_player_lyric_open'] = array(
-                'name' => 'wp_player_lyric_open',
-                'type' => 'select',
-                'options' => array(
-                    'close' => '关闭歌词',
-                    'open' => '开启歌词'
-                ),
-                'output' => false
-        );
-    }
-
     $meta_boxes = $val ? $arr1 : $arr2;
 
     if ( $apply ){
@@ -140,19 +141,13 @@ function wpPlayer_post_meta_boxes() {
         </ul>
         <div class="wp-player-row" id="wp-player-row">
             <div class="wp-player-inner current">
-                <p><strong>填写方法</strong></p>
-                <ol>
-                    <li class="red">如果您的选择音乐网站中出现了网易音乐，说明可以支持网易云音乐网址。</li>
-                    <li class="red">如果您的选择项中出现了开启或关闭歌词功能，说明可以支持歌词预览。</li>
-                    <li>在虾米网或网易云音乐打开喜欢的歌曲页面，复制歌曲页面的网址如：<code>http://www.xiami.com/song/2078022......</code></li>
-                    <li>并将复制的网址填写到后面的表单内。音乐类型将根据网址自动做出选择。</li>
-                    <li>点击<code>获取音乐ID</code>按钮，此时音乐ID出现在表单中。</li>
-                    <li>将短代码 <code>[player autoplay="1"]</code> 填入您的文章内容中。</li>
-                    <li>短代码中 <code>autoplay</code> 表示是否自动播放；参数<code>"0"</code>表示否；<code>"1"</code>表示是；</li>
-                    <li>支持播放歌单：单音乐页面、专辑页面、艺人页面、精选集页面（即网易云音乐歌单）。</li>
-                    <li><code>PS：</code>建议使用网址来获取音乐ID。<span class="red">歌词功能比较耗资源。</span></li>
-                </ol>
-                <div class="wp-player-input"><?php get_wp_player_metaBox(); ?></div>
+                <div class="wp-player-input"><?php
+                    if (function_exists('curl_init')) {
+                        get_wp_player_metaBox();
+                    } else {
+                        echo '<div>您的站点当前不支持此功能</div>';
+                    }
+                ?></div>
             </div>
             <div class="wp-player-inner"><?php get_wp_player_metaBox(false); ?></div>
         </div>
@@ -174,6 +169,7 @@ function wp_player_get_meta_text_input( $args = array(), $value = false ) {
     $html .= '<input type="hidden" name="'.$name.'_noncename" id="'.$name.'_noncename" value="'.wp_create_nonce( plugin_basename( __FILE__ ) ).'" />';
     if ( $button ){
         $html .= "\n".'<button id="wp_player_get_xiami_id" type="button" class="button wp-player-button">'.$button.'</button>';
+        $html .= "\n".'<a href="'.site_url( '/wp-admin/options-general.php?page=player.php' ).'" class="button button-primary wp-player-primary">使用说明</a>';
     }
     $html .= $output ? '</p></div>'."\n" : "\n";
 

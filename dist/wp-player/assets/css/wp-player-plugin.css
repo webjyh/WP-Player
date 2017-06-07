@@ -1,0 +1,10 @@
+/*!
+ * @name     WP-Player Admin CSS
+ * @desc     WP-Player MetaBox 样式
+ * @author   M.J
+ * @date     2014-12-19
+ * @update   2017-6-7
+ * @URL      http://webjyh.com
+ * @Github   https://github.com/webjyh/WP-Player
+ * @version  2.6.0
+ */.wp-player-wrap{padding:10px}.wp-player-wrap .wp-player-tabs{margin:0;border-bottom:1px solid #EEE;height:36px}.wp-player-wrap .wp-player-tabs li{display:inline-block;margin:0}.wp-player-wrap .wp-player-tabs li a{display:inline-block;padding:0 15px;height:36px;line-height:36px;color:#333;text-decoration:none;margin-right:10px;border:1px solid #FFF;border-bottom:0}.wp-player-wrap .wp-player-tabs li.current a{border-color:#EEE;background:#FFF;font-weight:700}.wp-player-wrap .wp-player-row{border:1px solid #EEE;padding:10px 15px;border-top:none}.wp-player-wrap .wp-player-row .red{color:red}.wp-player-wrap .wp-player-inner{display:none}.wp-player-wrap .wp-player-inner.current{display:block}.wp-player-wrap .wp-player-text{height:28px;width:50%}.wp-player-wrap .wp-player-select{vertical-align:top}.wp-player-wrap .wp-player-textarea{margin-bottom:10px}.wp-player-wrap .wp-player-textarea textarea{width:60%;min-height:120px;margin-bottom:5px;margin-right:5px}.wp-player-wrap .wp-player-textarea p.desc{margin:0;color:#666}@media screen and (min-width:1200px){.wp-player-wrap .wp-player-text{width:35%}}@media screen and (min-width:1300px){.wp-player-wrap .wp-player-text{width:45%}}@media screen and (min-width:1400px){.wp-player-wrap .wp-player-text{width:50%}}@media screen and (min-width:1500px){.wp-player-wrap .wp-player-text{width:55%}}

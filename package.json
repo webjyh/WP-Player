@@ -1,0 +1,40 @@
+{
+  "name": "wp-player",
+  "version": "2.6.0",
+  "description": "WP-Player 一个迷你歌曲播放器，支持多歌曲播放，支持使用网易云音乐, 虾米音乐, QQ音乐, 百度音乐歌曲地址, 也支持自定义上传音乐。",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webjyh/WP-Player.git"
+  },
+  "keywords": [
+    "网易云音乐",
+    "虾米音乐",
+    "QQ",
+    "音乐",
+    "百度音乐",
+    "MP3",
+    "WP-Player",
+    "Mp3-Player",
+    "Player"
+  ],
+  "author": "M.J",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/webjyh/WP-Player/issues"
+  },
+  "homepage": "https://github.com/webjyh/WP-Player#readme",
+  "dependencies": {
+    "autoprefixer": "^7.1.1",
+    "gulp": "^3.9.1",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-postcss": "^7.0.0",
+    "gulp-uglify": "^3.0.0"
+  },
+  "devDependencies": {
+    "gulp-replace": "^0.5.4"
+  }
+}

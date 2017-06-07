@@ -1,14 +1,15 @@
-/**
-* @name     Wp-Player Admin JS
-* @desc     MetaBox JavaScript
-* @depend   jQuery
-* @author   M.J
-* @date     2014-12-19
-* @update   2015-02-06
-* @URL      http://webjyh.com
-* @version  2.5.1
-* 
-*/
+/*!
+ * @name     Wp-Player Admin JS
+ * @desc     MetaBox JavaScript
+ * @depend   jQuery
+ * @author   M.J
+ * @date     2014-12-19
+ * @update   <%=date%>
+ * @URL      http://webjyh.com
+ * @Github   https://github.com/webjyh/WP-Player
+ * @version  <%=version%>
+ * 
+ */
 jQuery(document).ready(function() {
 
     //wp-player upload dialog
@@ -39,24 +40,27 @@ jQuery(document).ready(function() {
     //get Music ID
     jQuery('#wp_player_get_xiami_id').on('click', function() {
         var $type = jQuery('#wp_player_music_type'),
-            $len = $type.find('option').length,
             $elem = jQuery('#mp3_xiami'),
             $select = jQuery('#mp3_xiami_type'),
             $val = $elem.val(),
-            regs  = [/^http[s]?:\/\/\w*[\.]?xiami.com+\/(\w+)\/+(\d+).*$/, /^http:\/\/music.163.com\/#.*\/{1}(.+)\?id=(\d+)$/],
-            typeArr = ['xiami', 'netease'],
-            result = {},
-            mark = null;
+            regs  = [
+                /^http[s]?:\/\/music.163.com\/#.*\/{1}(.+)\?id=(\d+)/,
+                /^http[s]?:\/\/\w*[\.]?xiami.com+\/(\w+)\/+(\w+).*/,
+                /^http[s]?:\/\/y.qq.com\/n\/yqq\/(.+)\/+(\w+)*/,
+                /^http[s]?:\/\/music.baidu.com\/(.+)\/+(\w+)*/
+            ],
+            typeArr = ['netease', 'xiami', 'tencent', 'baidu'],
+            result = {};
 
         if (typeof $val === undefined ||  $val == '') {
             $elem.focus();
             return false;
         }
 
-        var reg = ($val.indexOf('163.com') > -1 && $len > 1) ? mark = 1 : mark = 0,
-            row = $val.match(regs[mark]);
+        var index = $val.indexOf('163.com') > -1 ? 0 : ($val.indexOf('xiami.com') > -1 ? 1 : ($val.indexOf('y.qq.com') > -1 ? 2 : 3)),
+            row = $val.match(regs[index]);
 
-        if (mark == 0 && !row && !jQuery.isNumeric($val)) {
+        if (!row || !jQuery.isArray(row)) {
             alert('\u83b7\u53d6\u97f3\u4e50ID\u5931\u8d25\uff01');
             return false;
         }
@@ -64,18 +68,17 @@ jQuery(document).ready(function() {
         if (jQuery.isArray(row)) {
             result['type'] = row[1];
             result['id'] = row[2];
-        } else {
-            if (!jQuery.isNumeric($val)){
-                alert('\u83b7\u53d6\u97f3\u4e50ID\u5931\u8d25\uff01');
-            }
         }
 
         if ( jQuery.isArray( row ) && result['type'] && result['id'] ) {
-            if ( result['type'] == 'playlist' ) result['type'] = 'collect';
+            if (result['type'] == 'singer') {
+                result['type'] = 'artist';
+            }
+            if ( result['type'] == 'playlist' || result['type'] == 'songlist' ) {
+                result['type'] = 'collect';
+            }
             $elem.val( result['id'] );
-            $type.children('option').prop('selected', false);
-            $select.children('option').prop('selected', false);
-            $type.find('option[value='+typeArr[mark]+']').prop('selected', true);
+            $type.find('option[value='+typeArr[index]+']').prop('selected', true);
             $select.find('option[value='+result['type']+']').prop('selected', true);
         }
     });
