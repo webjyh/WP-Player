@@ -1,6 +1,6 @@
 {
   "name": "wp-player",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "WP-Player 一个迷你歌曲播放器，支持多歌曲播放，支持使用网易云音乐, 虾米音乐, QQ音乐, 百度音乐歌曲地址, 也支持自定义上传音乐。",
   "main": "index.js",
   "scripts": {

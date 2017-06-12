@@ -719,7 +719,7 @@ class Meting
                 $data=$this->format(false)->song($id);
                 $this->format($format);
                 $data=json_decode($data, 1);
-                $url=$data['songinfo']['pic_big']?:$data['songinfo']['pic_small'];
+                $url=$data['songinfo']['pic_big'] ? $data['songinfo']['pic_big'] : $data['songinfo']['pic_small'];
                 break;
         }
         return json_encode(array('url'=>$url));
@@ -958,8 +958,8 @@ class Meting
         }
         $result=json_decode($result, 1);
         $data=array(
-           'lyric'  => (@$result['lrc']['lyric'])?:'',
-           'tlyric' => (@$result['tlyric']['lyric'])?:'',
+           'lyric'  => (@$result['lrc']['lyric'])? @$result['lrc']['lyric'] : '',
+           'tlyric' => (@$result['tlyric']['lyric']) ? @$result['tlyric']['lyric'] : '',
         );
         return json_encode($data);
     }
@@ -1007,7 +1007,7 @@ class Meting
         }
         $result=json_decode($result, 1);
         $data=array(
-            'lyric' => (@$result['lrcContent'])?:'',
+            'lyric' => (@$result['lrcContent']) ? @$result['lrcContent'] : '',
         );
         return json_encode($data);
     }
@@ -1021,7 +1021,7 @@ class Meting
             'id'        => $data['id'],
             'name'      => $data['name'],
             'artist'    => array(),
-            'pic_id'    => (@$data['al']['pic_str'])?:$data['al']['pic'],
+            'pic_id'    => (@$data['al']['pic_str']) ? @$data['al']['pic_str'] : $data['al']['pic'],
             'url_id'    => $data['id'],
             'lyric_id'  => $data['id'],
             'source'    => 'netease',
@@ -1059,7 +1059,7 @@ class Meting
         $result=array(
             'id'       => $data['song_id'],
             'name'     => $data['song_name'],
-            'artist'   => explode(';', (@$data['singers'])?:$data['artist_name']),
+			'artist'   => explode(';', (@$data['singers']) ? @$data['singers'] : $data['artist_name']),
             'pic_id'   => $data['song_id'],
             'url_id'   => $data['song_id'],
             'lyric_id' => $data['song_id'],
@@ -1071,7 +1071,7 @@ class Meting
     {
         $result=array(
             'id'       => $data['hash'],
-            'name'     => (@$data['filename'])?:$data['fileName'],
+            'name'     => (@$data['filename']) ? @$data['filename'] :$data['fileName'],
             'artist'   => array(),
             'url_id'   => $data['hash'],
             'pic_id'   => $data['hash'],

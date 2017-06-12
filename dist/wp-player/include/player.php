@@ -3,7 +3,7 @@
  * WordPress eXtended WP-Player
  */
 if ( !class_exists( 'wp_player_plugin' ) ){
-    $WP_PLAYER_VERSION = '2.6.0';
+    $WP_PLAYER_VERSION = '2.6.1';
     class wp_player_plugin {
 
         function __construct() {

@@ -3,7 +3,7 @@ Contributors: M.J
 Donate link: http://webjyh.qiniudn.com/alipay.png
 Tags: 网易云音乐, 虾米音乐, QQ 音乐, 百度音乐, MP3, WP-Player, Mp3-Player, Player
 Requires at least: 4.0
-Tested up to: 4.7.5
+Tested up to: 4.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -44,6 +44,9 @@ PS：一篇文章只能插入一个播放器，因为用了MetaBox获取参数�
 3. 插件后台设置
 
 == Changelog ==
+= v2.6.1 =
+1. 修复 PHP 语法报错问题
+
 = v2.6.0 =
 1. 新增 QQ音乐 百度音乐平台。
 2. 新增 当前歌曲不能播放，跳转至下一曲。
