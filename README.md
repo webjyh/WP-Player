@@ -23,7 +23,7 @@ npm run build
 ### 声明
 本插件仅供个人学习研究使用，请勿作为各种商业用户，音乐版权归各音乐平台所有。
 
-### Update Ver 2.6.2 (2021-12-30)
+### Update Ver 2.6.2 (2021-12-30) [@timk-lalala](https://github.com/timk-lalala)
 1. 修复 网易云音乐某些链接从http重写https的问题
 
 ### Update Ver 2.6.1 (2017-06-12)
