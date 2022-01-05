@@ -819,13 +819,13 @@ class Meting
         $data=json_decode($result, 1);
         if($data['data'][0]['uf'] != null) {
             $url=array(
-                'url' => str_replace('http://m8', 'https://m8', $data['data'][0]['uf']['url']),
+                'url' => str_replace('http://', 'https://', $data['data'][0]['uf']['url']),
                 'br'  =>$data['data'][0]['uf']['br']/1000,
             );
         }
         else{
             $url=array(
-                'url' => str_replace('http://m8', 'https://m8', $data['data'][0]['url']),
+                'url' => str_replace('http://', 'https://', $data['data'][0]['url']),
                 'br'  => $data['data'][0]['br']/1000,
             );
         }
